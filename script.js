@@ -2,7 +2,10 @@ const mainNav = document.querySelector(".ref-main-nav");
 const submenuPanel = document.querySelector(".ref-submenu-panel");
 const submenuRow = submenuPanel?.querySelector(".ref-sub-row");
 const SUBMENU_STORAGE_KEY = "yadam-active-menu";
-const SUBMENU_NAV_CLOSE_MS = 2000;
+const MAIN_SWITCH_CLOSE_MS = 170;
+const MAIN_SWITCH_OPEN_MS = 200;
+const SUBMENU_CLICK_CLOSE_MS = 2000;
+const SUBMENU_SHIFT_PX = -10;
 
 const submenuMap = {
   about: [
@@ -34,37 +37,75 @@ const submenuMap = {
   ],
 };
 
-function openSubmenu() {
-  document.body.classList.add("submenu-open");
-}
-
-function closeSubmenu() {
-  document.body.classList.remove("submenu-open");
-}
-
-if (mainNav && submenuPanel) {
+if (mainNav && submenuPanel && submenuRow) {
   const mainLinks = mainNav.querySelectorAll("a");
   let activeMenuKey = "about";
+  let transitionToken = 0;
+  let pendingNavigationHref = null;
+  let activeAnimation = null;
 
-  function renderSubmenu(menuKey) {
-    if (!submenuRow) return;
-    const items = submenuMap[menuKey] || submenuMap.about;
-    submenuRow.innerHTML = items
-      .map((item) => `<a href="${item.href}">${item.label}</a>`)
-      .join("");
+  function getCurrentVisualState() {
+    const styles = window.getComputedStyle(submenuRow);
+    const opacity = Number.parseFloat(styles.opacity) || 0;
+    const matrix = new DOMMatrix(styles.transform === "none" ? undefined : styles.transform);
+    return {
+      opacity,
+      y: Number.isFinite(matrix.m42) ? matrix.m42 : (opacity > 0.5 ? 0 : SUBMENU_SHIFT_PX),
+    };
   }
 
-  function switchSubmenu(menuKey) {
-    if (menuKey === activeMenuKey) {
-      openSubmenu();
-      return;
+  function stopAnimation() {
+    if (!activeAnimation) return;
+    activeAnimation.cancel();
+    activeAnimation = null;
+  }
+
+  function setLogicalOpen(isOpen) {
+    if (isOpen) {
+      document.body.classList.add("submenu-open");
+    } else {
+      document.body.classList.remove("submenu-open");
     }
-    // Hover-out -> hover-in 느낌으로: 먼저 닫히고, 내용 교체 후 다시 열기
-    closeSubmenu();
-    window.setTimeout(() => {
-      renderSubmenu(menuKey);
-      openSubmenu();
-    }, 280);
+  }
+
+  function animateTo(isOpen, duration) {
+    const from = getCurrentVisualState();
+    const toOpacity = isOpen ? 1 : 0;
+    const toY = isOpen ? 0 : SUBMENU_SHIFT_PX;
+    const isNearlySame =
+      Math.abs(from.opacity - toOpacity) < 0.01 && Math.abs(from.y - toY) < 0.5;
+
+    if (isOpen) setLogicalOpen(true);
+    stopAnimation();
+
+    if (isNearlySame) {
+      submenuRow.style.opacity = String(toOpacity);
+      submenuRow.style.transform = `translateY(${toY}px)`;
+      if (!isOpen) setLogicalOpen(false);
+      return Promise.resolve();
+    }
+
+    activeAnimation = submenuRow.animate(
+      [
+        { opacity: from.opacity, transform: `translateY(${from.y}px)` },
+        { opacity: toOpacity, transform: `translateY(${toY}px)` },
+      ],
+      { duration, easing: "ease", fill: "forwards" }
+    );
+
+    return activeAnimation.finished
+      .catch(() => undefined)
+      .then(() => {
+        submenuRow.style.opacity = String(toOpacity);
+        submenuRow.style.transform = `translateY(${toY}px)`;
+        if (!isOpen) setLogicalOpen(false);
+        if (activeAnimation?.playState === "finished") activeAnimation = null;
+      });
+  }
+
+  function renderSubmenu(menuKey) {
+    const items = submenuMap[menuKey] || submenuMap.about;
+    submenuRow.innerHTML = items.map((item) => `<a href="${item.href}">${item.label}</a>`).join("");
   }
 
   function setActiveMainLink(activeLink) {
@@ -72,48 +113,80 @@ if (mainNav && submenuPanel) {
     activeLink.classList.add("is-active");
   }
 
-  const initialMenuKey =
-    window.sessionStorage.getItem(SUBMENU_STORAGE_KEY) || "about";
+  async function runMainMenuSwitch(menuKey) {
+    transitionToken += 1;
+    const localToken = transitionToken;
+    pendingNavigationHref = null;
+
+    if (menuKey === activeMenuKey) {
+      await animateTo(true, MAIN_SWITCH_OPEN_MS);
+      return;
+    }
+
+    await animateTo(false, MAIN_SWITCH_CLOSE_MS);
+    if (localToken !== transitionToken) return;
+    renderSubmenu(menuKey);
+    await animateTo(true, MAIN_SWITCH_OPEN_MS);
+  }
+
+  function runSubmenuNavigation(href) {
+    transitionToken += 1;
+    pendingNavigationHref = href;
+    const localToken = transitionToken;
+
+    animateTo(false, SUBMENU_CLICK_CLOSE_MS).then(() => {
+      if (localToken !== transitionToken) return;
+      if (!pendingNavigationHref) return;
+      window.location.href = pendingNavigationHref;
+    });
+  }
+
+  const initialMenuKey = window.sessionStorage.getItem(SUBMENU_STORAGE_KEY) || "about";
   activeMenuKey = submenuMap[initialMenuKey] ? initialMenuKey : "about";
   renderSubmenu(activeMenuKey);
+  setLogicalOpen(false);
+  submenuRow.style.opacity = "0";
+  submenuRow.style.transform = `translateY(${SUBMENU_SHIFT_PX}px)`;
+
   const firstMain = mainNav.querySelector(`a[data-menu="${activeMenuKey}"]`);
   if (firstMain) firstMain.classList.add("is-active");
 
   mainLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
-      // Top menu is opener-only, never navigate directly.
       event.preventDefault();
       event.stopPropagation();
       const menuKey = link.dataset.menu || "about";
-      switchSubmenu(menuKey);
       activeMenuKey = menuKey;
       window.sessionStorage.setItem(SUBMENU_STORAGE_KEY, activeMenuKey);
       setActiveMainLink(link);
+      runMainMenuSwitch(menuKey);
     });
   });
 
   mainNav.addEventListener("click", (event) => {
     event.stopPropagation();
-    openSubmenu();
   });
 
   submenuPanel.addEventListener("click", (event) => {
     event.stopPropagation();
     const submenuLink = event.target.closest("a");
-    if (submenuLink) {
-      const href = submenuLink.getAttribute("href");
-      if (!href) return;
-      event.preventDefault();
-      document.body.classList.add("submenu-nav-closing");
-      submenuPanel.classList.add("is-nav-leaving");
-      window.setTimeout(() => {
-        window.location.href = href;
-      }, SUBMENU_NAV_CLOSE_MS);
-    }
+    if (!submenuLink) return;
+    event.preventDefault();
+    const href = submenuLink.getAttribute("href");
+    if (!href) return;
+    runSubmenuNavigation(href);
   });
 
-  document.addEventListener("click", closeSubmenu);
+  document.addEventListener("click", () => {
+    transitionToken += 1;
+    pendingNavigationHref = null;
+    animateTo(false, MAIN_SWITCH_CLOSE_MS);
+  });
+
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeSubmenu();
+    if (event.key !== "Escape") return;
+    transitionToken += 1;
+    pendingNavigationHref = null;
+    animateTo(false, MAIN_SWITCH_CLOSE_MS);
   });
 }

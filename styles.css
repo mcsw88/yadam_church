@@ -124,23 +124,7 @@ a:visited {
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
-  transition: opacity 360ms ease, transform 360ms ease;
-}
-
-.ref-submenu-panel.is-nav-leaving .ref-sub-row {
-  animation: submenu-leave 2000ms ease forwards;
-  pointer-events: none;
-}
-
-@keyframes submenu-leave {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+  transition: opacity 320ms ease, transform 320ms ease;
 }
 
 .submenu-open .ref-submenu-panel {
@@ -454,11 +438,6 @@ a:visited {
   }
   .ref-prehero {
     margin-top: 8px;
-  }
-  .ref-submenu-panel .ref-sub-row {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
   }
   .ref-hero h1 {
     font-size: 64px;
