@@ -1,4 +1,7 @@
 :root {
+  /* 바깥 프레임(진녹색 바탕) — body 흰 영역이 이 위에 떠 보이게 */
+  --frame-bg: #1e2812;
+  --frame-inset: clamp(10px, 2.5vw, 20px);
   --background-1: #ffffff;
   --text-headline: #000000;
   --text-paragraph: #6f6f6f;
@@ -14,9 +17,18 @@
   box-sizing: border-box;
 }
 
+html {
+  min-height: 100%;
+  background: var(--frame-bg);
+}
+
 body {
-  margin: 0;
+  margin: var(--frame-inset) auto;
+  width: 100%;
+  min-height: calc(100vh - 2 * var(--frame-inset));
+  max-width: min(calc(100vw - 2 * var(--frame-inset)), 1400px);
   background: var(--background-1);
+  border: 1px solid #000;
   color: var(--text-headline);
   font-family: "DM Sans", "Noto Sans KR", sans-serif;
   overflow-y: scroll;
