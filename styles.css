@@ -127,6 +127,22 @@ a:visited {
   transition: opacity 360ms ease, transform 360ms ease;
 }
 
+.ref-submenu-panel.is-nav-leaving .ref-sub-row {
+  animation: submenu-leave 2000ms ease forwards;
+  pointer-events: none;
+}
+
+@keyframes submenu-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
 .submenu-open .ref-submenu-panel {
   pointer-events: auto;
 }

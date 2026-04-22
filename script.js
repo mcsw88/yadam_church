@@ -2,6 +2,7 @@ const mainNav = document.querySelector(".ref-main-nav");
 const submenuPanel = document.querySelector(".ref-submenu-panel");
 const submenuRow = submenuPanel?.querySelector(".ref-sub-row");
 const SUBMENU_STORAGE_KEY = "yadam-active-menu";
+const SUBMENU_NAV_CLOSE_MS = 2000;
 
 const submenuMap = {
   about: [
@@ -100,7 +101,14 @@ if (mainNav && submenuPanel) {
     event.stopPropagation();
     const submenuLink = event.target.closest("a");
     if (submenuLink) {
-      openSubmenu();
+      const href = submenuLink.getAttribute("href");
+      if (!href) return;
+      event.preventDefault();
+      document.body.classList.add("submenu-nav-closing");
+      submenuPanel.classList.add("is-nav-leaving");
+      window.setTimeout(() => {
+        window.location.href = href;
+      }, SUBMENU_NAV_CLOSE_MS);
     }
   });
 
