@@ -1,58 +1,69 @@
-const mainNav = document.querySelector(".ref-main-nav");
-const submenuPanel = document.querySelector(".ref-submenu-panel");
-const submenuRow = submenuPanel?.querySelector(".ref-sub-row");
-const SUBMENU_STORAGE_KEY = "yadam-active-menu";
-const MAIN_SWITCH_CLOSE_MS = 170;
-const MAIN_SWITCH_OPEN_MS = 200;
-const SUBMENU_CLICK_CLOSE_MS = 2000;
-const SUBMENU_SHIFT_PX = -10;
+(() => {
+  const root = document.querySelector(".ref-header");
+  if (!root) return;
 
-const submenuMap = {
-  about: [
-    { label: "인사말", href: "./about.html#intro" },
-    { label: "비전", href: "./about.html#vision" },
-    { label: "섬기는 사람", href: "./about.html#leaders" },
-    { label: "예배시간", href: "./about.html#worship" },
-  ],
-  ministries: [
-    { label: "주일사역", href: "./ministries.html#sunday" },
-    { label: "다음세대", href: "./ministries.html#nextgen" },
-    { label: "선교/봉사", href: "./ministries.html#mission" },
-    { label: "새가족", href: "./ministries.html#newcomer" },
-  ],
-  news: [
-    { label: "공지사항", href: "./news.html#notice" },
-    { label: "행사일정", href: "./news.html#events" },
-    { label: "주보/알림", href: "./news.html#bulletin" },
-  ],
-  gallery: [
-    { label: "예배사진", href: "./gallery.html#worship" },
-    { label: "행사사진", href: "./gallery.html#events" },
-    { label: "아카이브", href: "./gallery.html#archive" },
-  ],
-  contact: [
-    { label: "일반문의", href: "./contact.html#general" },
-    { label: "기도요청", href: "./contact.html#prayer" },
-    { label: "새가족등록", href: "./contact.html#newcomer" },
-  ],
-};
+  const mainNav = root.querySelector(".ref-main-nav");
+  const submenuPanel = document.querySelector(".ref-submenu-panel");
+  const submenuRow = submenuPanel?.querySelector(".ref-sub-row");
+  if (!mainNav || !submenuPanel || !submenuRow) return;
 
-if (mainNav && submenuPanel && submenuRow) {
-  const mainLinks = mainNav.querySelectorAll("a");
-  let activeMenuKey = "about";
-  let transitionToken = 0;
-  let pendingNavigationHref = null;
-  let activeAnimation = null;
+  const OPEN_MS = 220;
+  const CLOSE_MS = 2000;
+  const SUBMENU_CLICK_FEEDBACK_MS = 80;
+  const SUBMENU_SHIFT_PX = -10;
+  const mainLinks = Array.from(mainNav.querySelectorAll("a[data-menu]"));
 
-  function getCurrentVisualState() {
+  const submenuMap = {
+    about: [
+      { label: "인사말", href: "./about.html#intro" },
+      { label: "교회비전", href: "./about.html#vision" },
+      { label: "섬기는 사람들", href: "./about.html#leaders" },
+      { label: "예배시간", href: "./about.html#worship" },
+    ],
+    ministries: [
+      { label: "주일사역", href: "./ministries.html#sunday" },
+      { label: "다음세대", href: "./ministries.html#nextgen" },
+      { label: "선교/봉사", href: "./ministries.html#mission" },
+      { label: "새가족", href: "./ministries.html#newcomer" },
+    ],
+    news: [
+      { label: "공지사항", href: "./notice.html" },
+      { label: "행사", href: "./news.html" },
+    ],
+    gallery: [{ label: "행사사진", href: "./gallery.html#events" }],
+    contact: [{ label: "익명 자유게시판", href: "./post.html?type=news&id=news-2026-0421" }],
+  };
+
+  function getMenuKeyFromPathname(pathname) {
+    const page = pathname.split("/").pop() || "index.html";
+    const routeMap = {
+      "index.html": "about",
+      "about.html": "about",
+      "ministries.html": "ministries",
+      "news.html": "news",
+      "notice.html": "news",
+      "gallery.html": "gallery",
+      "post.html": "news",
+      "contact.html": "contact",
+      "location.html": "contact",
+    };
+    return routeMap[page] || "about";
+  }
+
+  function getVisualState() {
     const styles = window.getComputedStyle(submenuRow);
     const opacity = Number.parseFloat(styles.opacity) || 0;
     const matrix = new DOMMatrix(styles.transform === "none" ? undefined : styles.transform);
     return {
       opacity,
-      y: Number.isFinite(matrix.m42) ? matrix.m42 : (opacity > 0.5 ? 0 : SUBMENU_SHIFT_PX),
+      y: Number.isFinite(matrix.m42) ? matrix.m42 : SUBMENU_SHIFT_PX,
     };
   }
+
+  let activeMenuKey = submenuMap[getMenuKeyFromPathname(window.location.pathname)] ? getMenuKeyFromPathname(window.location.pathname) : "about";
+  let activeAnimation = null;
+  let animationToken = 0;
+  let navToken = 0;
 
   function stopAnimation() {
     if (!activeAnimation) return;
@@ -60,28 +71,26 @@ if (mainNav && submenuPanel && submenuRow) {
     activeAnimation = null;
   }
 
-  function setLogicalOpen(isOpen) {
-    if (isOpen) {
-      document.body.classList.add("submenu-open");
-    } else {
-      document.body.classList.remove("submenu-open");
-    }
+  function setOpenState(isOpen) {
+    submenuPanel.classList.toggle("is-open", isOpen);
   }
 
-  function animateTo(isOpen, duration) {
-    const from = getCurrentVisualState();
-    const toOpacity = isOpen ? 1 : 0;
-    const toY = isOpen ? 0 : SUBMENU_SHIFT_PX;
-    const isNearlySame =
+  function animateTo({ open, duration }) {
+    animationToken += 1;
+    const localAnimationToken = animationToken;
+    const toOpacity = open ? 1 : 0;
+    const toY = open ? 0 : SUBMENU_SHIFT_PX;
+    const from = getVisualState();
+    const isSame =
       Math.abs(from.opacity - toOpacity) < 0.01 && Math.abs(from.y - toY) < 0.5;
 
-    if (isOpen) setLogicalOpen(true);
+    if (open) setOpenState(true);
     stopAnimation();
 
-    if (isNearlySame) {
+    if (isSame) {
       submenuRow.style.opacity = String(toOpacity);
       submenuRow.style.transform = `translateY(${toY}px)`;
-      if (!isOpen) setLogicalOpen(false);
+      if (!open) setOpenState(false);
       return Promise.resolve();
     }
 
@@ -96,97 +105,236 @@ if (mainNav && submenuPanel && submenuRow) {
     return activeAnimation.finished
       .catch(() => undefined)
       .then(() => {
+        if (localAnimationToken !== animationToken) return;
         submenuRow.style.opacity = String(toOpacity);
         submenuRow.style.transform = `translateY(${toY}px)`;
-        if (!isOpen) setLogicalOpen(false);
+        if (!open) setOpenState(false);
         if (activeAnimation?.playState === "finished") activeAnimation = null;
       });
   }
 
   function renderSubmenu(menuKey) {
-    const items = submenuMap[menuKey] || submenuMap.about;
-    submenuRow.innerHTML = items.map((item) => `<a href="${item.href}">${item.label}</a>`).join("");
+    const items = submenuMap[menuKey] || [];
+    submenuRow.innerHTML = items
+      .map((item) => `<a href="${item.href}">${item.label}</a>`)
+      .join("");
   }
 
-  function setActiveMainLink(activeLink) {
-    mainLinks.forEach((link) => link.classList.remove("is-active"));
-    activeLink.classList.add("is-active");
-  }
-
-  async function runMainMenuSwitch(menuKey) {
-    transitionToken += 1;
-    const localToken = transitionToken;
-    pendingNavigationHref = null;
-
-    if (menuKey === activeMenuKey) {
-      await animateTo(true, MAIN_SWITCH_OPEN_MS);
-      return;
-    }
-
-    await animateTo(false, MAIN_SWITCH_CLOSE_MS);
-    if (localToken !== transitionToken) return;
-    renderSubmenu(menuKey);
-    await animateTo(true, MAIN_SWITCH_OPEN_MS);
-  }
-
-  function runSubmenuNavigation(href) {
-    transitionToken += 1;
-    pendingNavigationHref = href;
-    const localToken = transitionToken;
-
-    animateTo(false, SUBMENU_CLICK_CLOSE_MS).then(() => {
-      if (localToken !== transitionToken) return;
-      if (!pendingNavigationHref) return;
-      window.location.href = pendingNavigationHref;
+  function setActiveMain(menuKey) {
+    mainLinks.forEach((link) => {
+      const isActive = (link.dataset.menu || "") === menuKey;
+      link.classList.toggle("is-active", isActive);
     });
   }
 
-  const initialMenuKey = window.sessionStorage.getItem(SUBMENU_STORAGE_KEY) || "about";
-  activeMenuKey = submenuMap[initialMenuKey] ? initialMenuKey : "about";
+  function openMenu(menuKey) {
+    navToken += 1;
+    activeMenuKey = menuKey;
+    renderSubmenu(menuKey);
+    setActiveMain(menuKey);
+    animateTo({ open: true, duration: OPEN_MS });
+  }
+
+  function closeMenu() {
+    navToken += 1;
+    animateTo({ open: false, duration: CLOSE_MS });
+  }
+
+  function handleSubmenuNavigation(href) {
+    const localToken = navToken + 1;
+    navToken = localToken;
+    animateTo({ open: false, duration: SUBMENU_CLICK_FEEDBACK_MS });
+    window.setTimeout(() => {
+      if (navToken !== localToken) return;
+      window.location.href = href;
+    }, SUBMENU_CLICK_FEEDBACK_MS);
+  }
+
   renderSubmenu(activeMenuKey);
-  setLogicalOpen(false);
+  setActiveMain(activeMenuKey);
+  setOpenState(false);
   submenuRow.style.opacity = "0";
   submenuRow.style.transform = `translateY(${SUBMENU_SHIFT_PX}px)`;
-
-  const firstMain = mainNav.querySelector(`a[data-menu="${activeMenuKey}"]`);
-  if (firstMain) firstMain.classList.add("is-active");
 
   mainLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
       const menuKey = link.dataset.menu || "about";
-      activeMenuKey = menuKey;
-      window.sessionStorage.setItem(SUBMENU_STORAGE_KEY, activeMenuKey);
-      setActiveMainLink(link);
-      runMainMenuSwitch(menuKey);
-    });
-  });
+      if (!submenuMap[menuKey]) return;
 
-  mainNav.addEventListener("click", (event) => {
-    event.stopPropagation();
+      if (menuKey === activeMenuKey && submenuPanel.classList.contains("is-open")) {
+        closeMenu();
+        return;
+      }
+      openMenu(menuKey);
+    });
   });
 
   submenuPanel.addEventListener("click", (event) => {
     event.stopPropagation();
-    const submenuLink = event.target.closest("a");
-    if (!submenuLink) return;
+    const link = event.target.closest("a[href]");
+    if (!link) return;
     event.preventDefault();
-    const href = submenuLink.getAttribute("href");
+    const href = link.getAttribute("href");
     if (!href) return;
-    runSubmenuNavigation(href);
+    handleSubmenuNavigation(href);
   });
 
-  document.addEventListener("click", () => {
-    transitionToken += 1;
-    pendingNavigationHref = null;
-    animateTo(false, MAIN_SWITCH_CLOSE_MS);
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest(".ref-header") || target.closest(".ref-submenu-panel")) return;
+    closeMenu();
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    transitionToken += 1;
-    pendingNavigationHref = null;
-    animateTo(false, MAIN_SWITCH_CLOSE_MS);
+    if (event.key === "Escape") closeMenu();
+  });
+})();
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function renderBoardRows(targetEl, items) {
+  if (!targetEl) return;
+  targetEl.innerHTML = items
+    .map(
+      (item) => `
+      <li class="board-row">
+        <a class="board-title-link" href="${item.detailHref}" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</a>
+        <time class="board-date" datetime="${item.date}">${item.date}</time>
+      </li>
+    `
+    )
+    .join("");
+}
+
+function initializeHomeBoards() {
+  const contentApi = window.YedamContent;
+  if (!contentApi) return;
+
+  const boardSections = document.querySelectorAll("[data-home-board]");
+  boardSections.forEach((section) => {
+    const type = section.getAttribute("data-board-type");
+    if (!type) return;
+
+    const meta = contentApi.boardMeta[type];
+    const titleEl = section.querySelector("[data-board-title]");
+    const moreEl = section.querySelector("[data-board-more]");
+    const listEl = section.querySelector("[data-board-list]");
+    const limit = Number.parseInt(section.getAttribute("data-board-limit") || "5", 10);
+    const items = contentApi.getPostsByType(type, Number.isNaN(limit) ? 5 : limit);
+
+    if (titleEl && meta) titleEl.textContent = meta.label;
+    if (moreEl && meta) moreEl.setAttribute("href", meta.listPage);
+    renderBoardRows(listEl, items);
   });
 }
+
+function renderHomeTableRows(targetEl, items) {
+  if (!targetEl) return;
+  targetEl.innerHTML = items
+    .map(
+      (item) => `
+      <li class="home-board-item">
+        <a class="board-title-link" href="${item.detailHref}" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</a>
+        <time class="board-date" datetime="${item.date}">${item.date}</time>
+      </li>
+    `
+    )
+    .join("");
+}
+
+function initializeHomeBoardTable() {
+  const contentApi = window.YedamContent;
+  const tableRoot = document.querySelector("[data-home-board-table]");
+  if (!contentApi || !tableRoot) return;
+
+  const limit = Number.parseInt(tableRoot.getAttribute("data-board-limit") || "5", 10);
+  const safeLimit = Number.isNaN(limit) ? 5 : limit;
+  const noticeMeta = contentApi.boardMeta.notice;
+  const newsMeta = contentApi.boardMeta.news;
+  const noticeItems = contentApi.getPostsByType("notice", safeLimit);
+  const newsItems = contentApi.getPostsByType("news", safeLimit);
+  const noticeTitle = tableRoot.querySelector('[data-board-title="notice"]');
+  const newsTitle = tableRoot.querySelector('[data-board-title="news"]');
+  const noticeMore = tableRoot.querySelector('[data-board-more="notice"]');
+  const newsMore = tableRoot.querySelector('[data-board-more="news"]');
+  const noticeBody = tableRoot.querySelector('[data-home-board-body="notice"]');
+  const newsBody = tableRoot.querySelector('[data-home-board-body="news"]');
+
+  if (noticeTitle && noticeMeta) noticeTitle.textContent = noticeMeta.label;
+  if (newsTitle && newsMeta) newsTitle.textContent = newsMeta.label;
+  if (noticeMore && noticeMeta) noticeMore.setAttribute("href", noticeMeta.listPage);
+  if (newsMore && newsMeta) newsMore.setAttribute("href", newsMeta.listPage);
+
+  renderHomeTableRows(noticeBody, noticeItems);
+  renderHomeTableRows(newsBody, newsItems);
+}
+
+function initializeListBoards() {
+  const contentApi = window.YedamContent;
+  if (!contentApi) return;
+
+  const boardSections = document.querySelectorAll("[data-list-board]");
+  boardSections.forEach((section) => {
+    const type = section.getAttribute("data-board-type");
+    if (!type) return;
+
+    const meta = contentApi.boardMeta[type];
+    const titleEl = section.querySelector("[data-list-title]");
+    const listEl = section.querySelector("[data-board-list]");
+    const items = contentApi.getPostsByType(type);
+
+    if (titleEl && meta) titleEl.textContent = meta.label;
+    renderBoardRows(listEl, items);
+  });
+}
+
+function initializePostDetail() {
+  const detailRoot = document.querySelector("[data-post-detail]");
+  const contentApi = window.YedamContent;
+  if (!detailRoot || !contentApi) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("type");
+  const id = params.get("id");
+  const titleEl = detailRoot.querySelector("[data-post-title]");
+  const dateEl = detailRoot.querySelector("[data-post-date]");
+  const bodyEl = detailRoot.querySelector("[data-post-body]");
+  const listLink = detailRoot.querySelector("[data-post-list-link]");
+  const meta = type ? contentApi.boardMeta[type] : null;
+  const post = type && id ? contentApi.getPostById(type, id) : null;
+
+  if (meta && listLink) {
+    listLink.textContent = `${meta.label} 목록`;
+    listLink.setAttribute("href", meta.listPage);
+  }
+
+  if (!post) {
+    if (titleEl) titleEl.textContent = "게시글을 찾을 수 없습니다.";
+    if (dateEl) dateEl.textContent = "";
+    if (bodyEl) {
+      bodyEl.textContent = "요청하신 게시글이 없거나 주소가 올바르지 않습니다.";
+    }
+    return;
+  }
+
+  if (titleEl) titleEl.textContent = post.title;
+  if (dateEl) dateEl.textContent = post.date;
+  if (bodyEl) {
+    bodyEl.textContent = "상세 본문은 향후 관리자 연동 시 데이터 소스에서 불러오도록 연결됩니다.";
+  }
+}
+
+initializeHomeBoards();
+initializeHomeBoardTable();
+initializeListBoards();
+initializePostDetail();
