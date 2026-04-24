@@ -1,6 +1,6 @@
 @font-face {
   font-family: "SUIT";
-  src: url("./SUIT-Variable.woff2") format("woff2");
+  src: url("/fonts/SUIT-Variable.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -60,9 +60,11 @@ a:visited {
   padding-top: 0;
   position: sticky;
   top: 0;
-  z-index: 50;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(6px);
+  z-index: 100;
+  background: #fff;
+  opacity: 1;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .ref-header::after {
@@ -84,13 +86,17 @@ a:visited {
 .ref-logo {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
   transform: translateY(3px);
 }
 
 .ref-logo img {
   display: block;
-  width: 105px;
+  width: clamp(52px, 8.5vw, 105px);
   height: auto;
+  max-height: clamp(52px, 8.5vw, 105px);
+  object-fit: contain;
 }
 
 .ref-main-nav {
@@ -98,22 +104,35 @@ a:visited {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 27px;
+  gap: clamp(10px, 1.9vw, 27px);
+  min-width: 0;
 }
 
 .ref-main-nav a,
-.ref-sub-row a {
+.ref-main-nav button,
+.ref-sub-row a,
+.ref-sub-row button {
   font-size: 13.5px;
   font-weight: 700;
-  font-family: "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family:
+    "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   letter-spacing: -0.01em;
 }
 
-.ref-main-nav a {
+.ref-main-nav a,
+.ref-main-nav button {
+  font-size: clamp(11px, 1vw, 13.5px);
+  line-height: 1.2;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
+  border: 0;
+  background: transparent;
+  padding: 0;
 }
 
-.ref-main-nav a.is-active {
+.ref-main-nav a.is-active,
+.ref-main-nav button.is-active {
   color: var(--accent-1);
 }
 
@@ -125,6 +144,8 @@ a:visited {
   padding: 10px 16px;
   font-size: 10px;
   font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ref-cta:visited {
@@ -140,14 +161,73 @@ a:visited {
   margin-top: 0;
 }
 
+.ref-sub-row button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
 .ref-prehero {
   margin-top: 8px;
-  height: 220px;
+  height: 25px;
 }
 
 .ref-submenu-panel {
   height: 58px;
   overflow: hidden;
+  pointer-events: none;
+}
+
+.ref-submenu-panel-floating {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 58px;
+  overflow: hidden;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid transparent;
+}
+
+.ref-submenu-panel-floating .ref-sub-row {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ref-submenu-panel-floating.is-open {
+  pointer-events: auto;
+}
+
+.ref-submenu-panel-floating.is-open .ref-sub-row {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    visibility 0s linear;
+}
+
+.ref-submenu-panel-floating.is-closing .ref-sub-row {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: visible;
+  pointer-events: none;
+  transition:
+    opacity 2s ease,
+    transform 2s ease,
+    visibility 0s linear;
+}
+
+.ref-submenu-panel-floating.is-hidden .ref-sub-row {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -169,7 +249,9 @@ a:visited {
 
 .ref-hero {
   margin-top: 0px;
-  height: 200px;
+  min-height: 120px;
+  height: auto;
+  margin-bottom: clamp(24px, 3.2vw, 48px);
 }
 
 .ref-hero-meta {
@@ -177,9 +259,9 @@ a:visited {
   align-items: center;
   gap: 12px;
   font-family: "Roboto Mono", monospace;
-  font-size: 12px;
-  color: var(--text-captions);
-  margin-top: 120px;
+  font-size: 10px;
+  color: var(--accent-6);
+  margin-top: 80px;
 }
 
 .ref-hero-meta .rights {
@@ -208,7 +290,7 @@ a:visited {
 }
 
 .ref-card-image {
-  margin-top: 30px;
+  margin-top: 0;
   position: relative;
 }
 
@@ -336,7 +418,7 @@ a:visited {
 
 .ref-main-boards {
   margin-top: 22px;
-  border-top: 2px solid var(--table-line);
+  border-top: 1px solid var(--table-line);
   padding-top: 30px;
 }
 
@@ -367,7 +449,7 @@ a:visited {
 }
 
 .home-board-panel {
-  border: 2px solid var(--table-line);
+  border: 1px solid var(--table-line);
   border-radius: 22px;
   background: #fff;
   overflow: hidden;
@@ -570,7 +652,31 @@ a:visited {
 }
 
 .page-main {
-  padding-bottom: 70px;
+  padding-bottom: 48px;
+}
+
+.ref-footer {
+  border-top: 1px solid var(--divider-1);
+  padding: 24px 0 30px;
+}
+
+.ref-footer-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-headline);
+}
+
+.ref-footer p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-paragraph);
+}
+
+.ref-footer-copy {
+  margin-top: 8px !important;
+  color: var(--accent-6) !important;
 }
 
 .page-block {
@@ -684,7 +790,7 @@ a:visited {
     transform: none;
     margin-left: auto;
     margin-right: auto;
-    gap: 16px;
+    gap: clamp(6px, 1.8vw, 16px);
   }
   .ref-top-row {
     height: 84px;
@@ -695,6 +801,9 @@ a:visited {
   .ref-submenu-panel {
     height: 44px;
     pointer-events: auto;
+  }
+  .ref-submenu-panel-floating {
+    height: 44px;
   }
   .ref-prehero {
     margin-top: 8px;
@@ -752,7 +861,6 @@ a:visited {
 
   .home-board-split {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-width: 760px;
     gap: 14px;
   }
 
@@ -808,7 +916,7 @@ a:visited {
   }
 
   .page-main {
-    padding-bottom: 42px;
+    padding-bottom: 32px;
   }
 
   .page-block {
@@ -832,5 +940,16 @@ a:visited {
 
   .page-card h3 {
     font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-board-table {
+    overflow-x: visible;
+  }
+
+  .home-board-split {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
