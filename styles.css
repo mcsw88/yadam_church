@@ -1263,9 +1263,22 @@ a:visited {
   border-bottom-color: var(--divider-1);
 }
 
-/* 주일/예배 안내: timeline을 짧은 구간으로 나누는 라벨(리듬) */
+/* 주일/예배 안내: timeline을 짧은 구간으로 나누는 라벨(리듬) — 구간·표를 한 박스로 */
+.timeline-rhythm {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.5vw, 20px);
+}
+
+.timeline-rhythm-segment {
+  border: 1px solid var(--divider-1);
+  border-radius: 14px;
+  padding: 14px 16px 10px;
+  min-width: 0;
+}
+
 .timeline-rhythm .ref-kicker {
-  margin: 0.65rem 0 0.1rem;
+  margin: 0 0 8px;
   font-size: 12px;
   color: var(--text-captions);
   font-family: "Roboto Mono", monospace;
@@ -1273,16 +1286,22 @@ a:visited {
 }
 
 .timeline-rhythm .timeline-rhythm-segment:first-child .ref-kicker {
-  margin-top: 0.2rem;
+  margin-top: 0;
 }
 
 .timeline-rhythm .timeline-list {
-  margin-top: 0.15rem;
+  margin-top: 0;
+  border-top: 0;
 }
 
 .timeline-rhythm .timeline-rhythm-segment:not(:first-child) .ref-kicker + .timeline-list {
   border-top: 0;
-  margin-top: 0.25rem;
+  margin-top: 0;
+}
+
+.timeline-rhythm-segment .timeline-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
 }
 
 .timeline-rhythm + .quiet-list,
@@ -1299,14 +1318,14 @@ a:visited {
 
 .timeline-list li {
   display: grid;
-  grid-template-columns: minmax(5.5em, auto) minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr);
   column-gap: 1rem;
   padding: 12px 0;
   border-bottom: 1px solid var(--divider-1);
   font-size: 14px;
   line-height: 1.55;
   color: var(--text-paragraph);
-  align-items: baseline;
+  align-items: start;
 }
 
 .timeline-list time,
@@ -1315,6 +1334,8 @@ a:visited {
   font-family: "Roboto Mono", monospace;
   color: var(--text-captions);
   white-space: nowrap;
+  min-width: max-content;
+  align-self: start;
 }
 
 .timeline-list li > div .page-desc + .page-desc {
@@ -1933,11 +1954,6 @@ a:visited {
   .profile-visual,
   .profile-placeholder {
     max-width: 160px;
-  }
-
-  .timeline-list li {
-    grid-template-columns: 1fr;
-    row-gap: 4px;
   }
 }
 
