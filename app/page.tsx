@@ -25,16 +25,11 @@ export default function HomePage() {
         <img src="/assets/images/main_img.png" alt="메인 이미지" />
       </section>
 
-      <section className="ref-trusted">
-        <p className="ref-kicker">Trusted by</p>
-        <div className="ref-logos">
-          <span>logi</span>
-          <span>Logipsum</span>
-          <span>✦</span>
-          <span>Logipsum</span>
-          <span>LOREM&NUY</span>
-          <span className="logo-pill">logipsum</span>
-        </div>
+      <section className="ref-home-welcome" aria-label="공동체 안내">
+        <p className="ref-kicker">함께 예배하고 섬기는 공동체</p>
+        <p className="ref-home-welcome-line">
+          말씀과 기도, 섬김의 자리에 함께하는 예배 공동체로 주님 앞에 서고자 합니다.
+        </p>
       </section>
 
       <section className="ref-main-boards">
@@ -78,13 +73,6 @@ export default function HomePage() {
             </section>
           </div>
         </div>
-      </section>
-
-      <section className="ref-large-image">
-        <img
-          src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=80"
-          alt="Mountain range sample"
-        />
       </section>
     </main>
   );

@@ -22,16 +22,14 @@
     ],
     ministries: [
       { label: "주일사역", href: "./ministries.html#sunday" },
-      { label: "다음세대", href: "./ministries.html#nextgen" },
       { label: "선교/봉사", href: "./ministries.html#mission" },
-      { label: "새가족", href: "./ministries.html#newcomer" },
     ],
     news: [
       { label: "공지사항", href: "./notice.html" },
       { label: "행사", href: "./news.html" },
     ],
     gallery: [{ label: "행사사진", href: "./gallery.html#events" }],
-    contact: [{ label: "익명 자유게시판", href: "./post.html?type=news&id=news-2026-0421" }],
+    contact: [{ label: "자유게시판", href: "./post.html?type=news&id=news-2026-0421" }],
   };
 
   function getMenuKeyFromPathname(pathname) {

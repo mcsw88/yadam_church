@@ -3,41 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getMenuKeyFromPath, type MenuKey, submenuMap } from "../lib/navigation";
 
-type MenuKey = "about" | "ministries" | "news" | "gallery" | "contact";
 type MenuPhase = "closed" | "opening" | "open" | "closing";
-
-type SubmenuItem = { label: string; href: string };
-
-const submenuMap: Record<MenuKey, SubmenuItem[]> = {
-  about: [
-    { label: "인사말", href: "/about#intro" },
-    { label: "교회비전", href: "/about#vision" },
-    { label: "섬기는 사람들", href: "/about#leaders" },
-    { label: "예배시간", href: "/about#worship" },
-  ],
-  ministries: [
-    { label: "주일사역", href: "/ministries#sunday" },
-    { label: "다음세대", href: "/ministries#nextgen" },
-    { label: "선교/봉사", href: "/ministries#mission" },
-    { label: "새가족", href: "/ministries#newcomer" },
-  ],
-  news: [
-    { label: "공지사항", href: "/notice" },
-    { label: "행사", href: "/news" },
-  ],
-  gallery: [{ label: "행사사진", href: "/gallery" }],
-  contact: [{ label: "익명 자유게시판", href: "/contact" }],
-};
-
-function getMenuKeyFromPath(pathname: string): MenuKey {
-  if (pathname.startsWith("/ministries")) return "ministries";
-  if (pathname.startsWith("/news") || pathname.startsWith("/notice")) return "news";
-  if (pathname.startsWith("/post")) return "news";
-  if (pathname.startsWith("/gallery")) return "gallery";
-  if (pathname.startsWith("/contact") || pathname.startsWith("/location")) return "contact";
-  return "about";
-}
 
 export function SiteHeader() {
   const pathname = usePathname();
