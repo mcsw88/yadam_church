@@ -14,6 +14,7 @@ export function SiteHeader() {
   const activePathMenu = useMemo(() => getMenuKeyFromPath(pathname), [pathname]);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openCommitRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prefetchedHrefsRef = useRef<Set<string>>(new Set());
   const [visibleSubmenuKey, setVisibleSubmenuKey] = useState<MenuKey>(activePathMenu);
   const [visualActiveMenu, setVisualActiveMenu] = useState<MenuKey>(activePathMenu);
   const [menuPhase, setMenuPhase] = useState<MenuPhase>("closed");
@@ -55,6 +56,14 @@ export function SiteHeader() {
     }, 0);
   };
 
+  const prefetchSubmenuGroup = (menuKey: MenuKey) => {
+    for (const item of submenuMap[menuKey]) {
+      if (prefetchedHrefsRef.current.has(item.href)) continue;
+      prefetchedHrefsRef.current.add(item.href);
+      void router.prefetch(item.href);
+    }
+  };
+
   const openMenu = (menuKey: MenuKey) => {
     clearCloseTimer();
     clearOpenCommit();
@@ -62,6 +71,7 @@ export function SiteHeader() {
     setVisibleSubmenuKey(menuKey);
     setMenuPhase("opening");
     commitOpenPhase();
+    prefetchSubmenuGroup(menuKey);
   };
 
   const closeMenu = (closingMenuKey: MenuKey) => {
@@ -75,9 +85,8 @@ export function SiteHeader() {
     }, 2000);
   };
 
-  const handleSubmenuClick = (parentMenuKey: MenuKey, href: string) => {
+  const handleSubmenuLinkActivate = (parentMenuKey: MenuKey) => {
     setVisualActiveMenu(parentMenuKey);
-    router.push(href);
     closeMenu(parentMenuKey);
   };
 
@@ -128,9 +137,14 @@ export function SiteHeader() {
         <div className="ref-container">
           <div className="ref-sub-row">
             {submenuItems.map((item) => (
-              <button key={item.href} type="button" onClick={() => handleSubmenuClick(visibleSubmenuKey, item.href)}>
+              <Link
+                key={item.href}
+                href={item.href}
+                prefetch={false}
+                onClick={() => handleSubmenuLinkActivate(visibleSubmenuKey)}
+              >
                 {item.label}
-              </button>
+              </Link>
             ))}
           </div>
         </div>

@@ -6,6 +6,6 @@
  * 파일을 올려도 숫자가 안 바뀐 것처럼 보일 수 있으므로, 소스는 이 상수만 본다.
  * 대시보드에 해당 env 가 있다면 삭제해도 됩니다.
  */
-const FILE_FALLBACK = 10;
+const FILE_FALLBACK = 11;
 
 export const DEPLOY_REVISION = FILE_FALLBACK;

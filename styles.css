@@ -113,6 +113,7 @@ a:visited {
   row-gap: 6px;
 }
 
+.ref-header .ref-sub-row a,
 .ref-header .ref-sub-row button {
   color: var(--text-headline);
   -webkit-tap-highlight-color: transparent;
@@ -367,11 +368,13 @@ a:visited {
   margin-top: 0;
 }
 
+.ref-sub-row a,
 .ref-sub-row button {
   border: 0;
   background: transparent;
   padding: 0;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .ref-prehero {
