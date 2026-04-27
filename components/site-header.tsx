@@ -18,9 +18,6 @@ export function SiteHeader() {
   const [menuPhase, setMenuPhase] = useState<MenuPhase>("closed");
   const highlightedMenuKey = visualActiveMenu ?? activePathMenu;
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileAccordionKey, setMobileAccordionKey] = useState<MenuKey | null>(null);
-
   useEffect(() => {
     if (menuPhase === "closed") {
       setVisibleSubmenuKey(activePathMenu);
@@ -33,53 +30,6 @@ export function SiteHeader() {
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
       if (openCommitRef.current) clearTimeout(openCommitRef.current);
     };
-  }, []);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setMobileAccordionKey(null);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [mobileMenuOpen]);
-
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setMobileMenuOpen(false);
-        setMobileAccordionKey(null);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mobileMenuOpen]);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1201px)");
-    const onWiden = () => {
-      if (mq.matches) {
-        setMobileMenuOpen(false);
-        setMobileAccordionKey(null);
-      }
-    };
-    onWiden();
-    try {
-      if (typeof mq.addEventListener === "function") {
-        mq.addEventListener("change", onWiden);
-        return () => mq.removeEventListener("change", onWiden);
-      }
-      mq.addListener(onWiden);
-      return () => mq.removeListener(onWiden);
-    } catch {
-      return undefined;
-    }
   }, []);
 
   const submenuItems = useMemo(() => submenuMap[visibleSubmenuKey], [visibleSubmenuKey]);
@@ -130,17 +80,6 @@ export function SiteHeader() {
     closeMenu(parentMenuKey);
   };
 
-  const toggleMobileAccordion = (key: MenuKey) => {
-    setMobileAccordionKey((current) => (current === key ? null : key));
-  };
-
-  const handleMobileSubLink = (parentKey: MenuKey, href: string) => {
-    setVisualActiveMenu(parentKey);
-    router.push(href);
-    setMobileMenuOpen(false);
-    setMobileAccordionKey(null);
-  };
-
   const isPanelVisible = menuPhase !== "closed";
   const isClosing = menuPhase === "closing";
   const isHidden = menuPhase === "closed";
@@ -152,7 +91,7 @@ export function SiteHeader() {
           <Link className="ref-logo" href="/">
             <img src="/assets/images/yadam_logo.png" alt="예닮교회 로고" />
           </Link>
-          <nav className="ref-main-nav ref-main-nav--desktop" aria-label="main navigation">
+          <nav className="ref-main-nav" aria-label="main navigation">
             {mainMenuItems.map(({ key, label }) => (
               <button
                 key={key}
@@ -168,91 +107,14 @@ export function SiteHeader() {
             <Link className="ref-cta" href="/location">
               오시는길
             </Link>
-            <button
-              type="button"
-              className="ref-mobile-menu-toggle"
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-nav-drawer"
-              aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
-              onClick={() => {
-                setMobileMenuOpen((open) => {
-                  const next = !open;
-                  if (next) setMobileAccordionKey(activePathMenu);
-                  else setMobileAccordionKey(null);
-                  return next;
-                });
-              }}
-            >
-              <span className="ref-mobile-menu-toggle-bars" aria-hidden />
-            </button>
           </div>
         </div>
       </div>
 
-      {mobileMenuOpen ? (
-        <button
-          type="button"
-          className="ref-mobile-scrim"
-          aria-label="메뉴 닫기"
-          onClick={() => {
-            setMobileMenuOpen(false);
-            setMobileAccordionKey(null);
-          }}
-        />
-      ) : null}
-
       <div
-        id="mobile-nav-drawer"
-        className={`ref-mobile-drawer ${mobileMenuOpen ? "is-open" : ""}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="사이트 메뉴"
-        aria-hidden={!mobileMenuOpen}
-      >
-        <div className="ref-container ref-mobile-drawer-inner">
-          {mainMenuItems.map(({ key, label }) => (
-            <div key={key} className="ref-mobile-accordion">
-              <button
-                type="button"
-                className={`ref-mobile-accordion-trigger ${mobileAccordionKey === key ? "is-expanded" : ""}`}
-                aria-expanded={mobileAccordionKey === key}
-                onClick={() => toggleMobileAccordion(key)}
-              >
-                {label}
-              </button>
-              {mobileAccordionKey === key ? (
-                <div className="ref-mobile-accordion-panel">
-                  {submenuMap[key].map((item) => (
-                    <button
-                      key={item.href}
-                      type="button"
-                      className="ref-mobile-sublink"
-                      onClick={() => handleMobileSubLink(key, item.href)}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ))}
-          <Link
-            className="ref-mobile-drawer-standalone"
-            href="/location"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setMobileAccordionKey(null);
-            }}
-          >
-            오시는길
-          </Link>
-        </div>
-      </div>
-
-      <div
-        className={`ref-submenu-panel-floating ref-submenu-panel-floating--desktop ${isPanelVisible ? "is-open" : ""} ${
-          isClosing ? "is-closing" : ""
-        } ${isHidden ? "is-hidden" : ""}`}
+        className={`ref-submenu-panel-floating ${isPanelVisible ? "is-open" : ""} ${isClosing ? "is-closing" : ""} ${
+          isHidden ? "is-hidden" : ""
+        }`}
       >
         <div className="ref-container">
           <div className="ref-sub-row">
