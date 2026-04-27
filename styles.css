@@ -99,11 +99,18 @@ a:visited {
   color: #fff;
 }
 
-.ref-main-nav button {
+.ref-main-nav-core button,
+.ref-main-nav > a:not(.ref-main-nav-location) {
   color: var(--text-headline);
   -webkit-tap-highlight-color: transparent;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* 레거시 .html: core 래퍼 없이 nav에 a만 있는 경우 */
+.ref-main-nav:not(:has(.ref-main-nav-core)) {
+  justify-content: center;
+  row-gap: 6px;
 }
 
 .ref-header .ref-sub-row button {
@@ -123,7 +130,7 @@ a:visited {
 .ref-top-row {
   height: 148px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   column-gap: clamp(8px, 1.2vw, 20px);
   position: relative;
@@ -152,18 +159,29 @@ a:visited {
   left: auto;
   transform: none;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: clamp(6px, 0.4rem + 1.2vw, 27px);
   min-width: 0;
   grid-column: 2;
   justify-self: center;
+  width: max-content;
   max-width: 100%;
-  flex-wrap: wrap;
-  justify-content: center;
-  row-gap: 6px;
+  box-sizing: border-box;
 }
 
-.ref-main-nav a,
-.ref-main-nav button,
+.ref-main-nav-core {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(6px, 0.4rem + 1.2vw, 27px);
+  row-gap: 6px;
+  min-width: 0;
+}
+
+.ref-main-nav-core button,
+.ref-main-nav > a:not(.ref-main-nav-location),
 .ref-sub-row a,
 .ref-sub-row button {
   font-size: 13.5px;
@@ -173,8 +191,8 @@ a:visited {
   letter-spacing: -0.01em;
 }
 
-.ref-main-nav a:not(.ref-main-nav-location),
-.ref-main-nav button {
+.ref-main-nav-core button,
+.ref-main-nav > a:not(.ref-main-nav-location) {
   font-size: clamp(10.5px, 2.7vw, 13.5px);
   line-height: 1.25;
   white-space: nowrap;
@@ -203,8 +221,8 @@ a:visited {
   opacity: 0.88;
 }
 
-.ref-main-nav a.is-active:not(.ref-main-nav-location),
-.ref-main-nav button.is-active {
+.ref-main-nav-core button.is-active,
+.ref-main-nav > a:not(.ref-main-nav-location).is-active {
   color: var(--accent-1);
 }
 
@@ -273,17 +291,23 @@ a:visited {
   .ref-main-nav {
     grid-column: 2;
     justify-self: stretch;
-    justify-content: flex-start;
-    align-content: center;
+    width: auto;
+    max-width: 100%;
     gap: clamp(6px, 1.6vw, 14px);
     row-gap: clamp(6px, 1.2vw, 10px);
     min-width: 0;
-    max-width: 100%;
-    flex-wrap: wrap;
   }
 
-  .ref-main-nav a:not(.ref-main-nav-location),
-  .ref-main-nav button {
+  .ref-main-nav-core {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    gap: clamp(6px, 1.6vw, 14px);
+    row-gap: clamp(6px, 1.2vw, 10px);
+  }
+
+  .ref-main-nav-core button,
+  .ref-main-nav > a:not(.ref-main-nav-location) {
     font-size: clamp(10.5px, 2.7vw, 13.5px);
     letter-spacing: -0.04em;
     line-height: 1.25;

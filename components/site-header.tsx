@@ -93,16 +93,18 @@ export function SiteHeader() {
             <img src="/assets/images/yadam_logo.png" alt="예닮교회 로고" />
           </Link>
           <nav className="ref-main-nav" aria-label="main navigation">
-            {mainMenuItems.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                className={highlightedMenuKey === key ? "is-active" : ""}
-                onClick={() => openMenu(key)}
-              >
-                {label}
-              </button>
-            ))}
+            <div className="ref-main-nav-core">
+              {mainMenuItems.map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={highlightedMenuKey === key ? "is-active" : ""}
+                  onClick={() => openMenu(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
             <Link
               className={`ref-main-nav-location${pathname.startsWith("/location") ? " is-active" : ""}`}
               href="/location"

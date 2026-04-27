@@ -3,7 +3,7 @@
  * 새로 배포할 때마다 이 숫자를 1 증가시킨 뒤 커밋·푸시하세요.
  * (Vercel에서 NEXT_PUBLIC_DEPLOY_REVISION 을 넣으면 빌드 시 그 값이 우선합니다.)
  */
-const FILE_FALLBACK = 7;
+const FILE_FALLBACK = 9;
 
 export const DEPLOY_REVISION = (() => {
   const fromEnv = process.env.NEXT_PUBLIC_DEPLOY_REVISION;
