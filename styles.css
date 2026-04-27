@@ -113,8 +113,10 @@ a:visited {
 
 .ref-top-row {
   height: 148px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
+  column-gap: clamp(8px, 1.2vw, 20px);
   position: relative;
 }
 
@@ -124,6 +126,8 @@ a:visited {
   flex-shrink: 1;
   min-width: 0;
   transform: translateY(3px);
+  grid-column: 1;
+  justify-self: start;
 }
 
 .ref-logo img {
@@ -135,12 +139,18 @@ a:visited {
 }
 
 .ref-main-nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  left: auto;
+  transform: none;
   display: flex;
-  gap: clamp(10px, 1.9vw, 27px);
+  gap: clamp(6px, 0.4rem + 1.2vw, 27px);
   min-width: 0;
+  grid-column: 2;
+  justify-self: center;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 6px;
 }
 
 .ref-main-nav a,
@@ -156,7 +166,8 @@ a:visited {
 
 .ref-main-nav a,
 .ref-main-nav button {
-  font-size: clamp(11px, 1vw, 13.5px);
+  /* 좁을수록 비율에 맞게 작아지도록 (최소·최대는 기존 톤 유지) */
+  font-size: clamp(10px, 0.28rem + 0.85vw, 13.5px);
   line-height: 1.2;
   white-space: nowrap;
   flex-shrink: 0;
@@ -172,19 +183,21 @@ a:visited {
 }
 
 .ref-header-trailing {
-  margin-left: auto;
+  margin-left: 0;
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  grid-column: 3;
+  justify-self: end;
 }
 
 .ref-cta {
   background: var(--accent-1);
   color: #fff;
   border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 10px;
+  padding: clamp(7px, 0.2rem + 0.5vw, 10px) clamp(10px, 0.4rem + 0.6vw, 16px);
+  font-size: clamp(9px, 0.15rem + 0.45vw, 10px);
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1897,20 +1910,27 @@ a:visited {
     display: inline-flex;
   }
 
+  /* 모바일: 대메뉴 숨김 → 로고 | 오시는길·햄버거 2열(겹침 방지) */
   .ref-top-row {
     height: auto;
     min-height: 72px;
     padding-top: 10px;
     padding-bottom: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .ref-cta {
-    padding: 8px 12px;
-    font-size: 10px;
+  .ref-logo {
+    grid-column: 1;
   }
 
   .ref-header-trailing {
+    grid-column: 2;
     gap: 8px;
+  }
+
+  .ref-cta {
+    padding: clamp(6px, 0.1rem + 0.4vw, 8px) clamp(8px, 0.2rem + 0.5vw, 12px);
+    font-size: clamp(8px, 0.1rem + 1.4vw, 10px);
   }
   .ref-sub-row {
     height: 44px;
