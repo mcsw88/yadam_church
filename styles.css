@@ -67,6 +67,35 @@ a:visited {
   -webkit-backdrop-filter: none;
 }
 
+/* 모바일 Safari 등: 헤더 내 링크 기본 파란색 방지 */
+.ref-header a:link,
+.ref-header a:visited {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-header .ref-logo {
+  color: var(--text-headline);
+}
+
+.ref-header .ref-cta:link,
+.ref-header .ref-cta:visited {
+  color: #fff;
+}
+
+.ref-main-nav button {
+  color: var(--text-headline);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ref-header .ref-sub-row button {
+  color: var(--text-headline);
+  -webkit-tap-highlight-color: transparent;
+}
+
 .ref-header::after {
   content: "";
   display: block;
@@ -1710,6 +1739,52 @@ a:visited {
   }
   .ref-top-row {
     height: 84px;
+  }
+
+  /* 좁은 모바일: 한 줄에 로고·5메뉴·CTA가 겹침 → 2행으로 분리 */
+  @media (max-width: 640px) {
+    .ref-top-row {
+      flex-wrap: wrap;
+      height: auto;
+      min-height: 72px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      row-gap: 10px;
+      align-items: center;
+    }
+
+    .ref-logo {
+      order: 1;
+      flex: 0 0 auto;
+    }
+
+    .ref-cta {
+      order: 2;
+      margin-left: auto;
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      font-size: 10px;
+    }
+
+    .ref-main-nav {
+      order: 3;
+      flex: 1 1 100%;
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      justify-content: center;
+      flex-wrap: wrap;
+      row-gap: 8px;
+      column-gap: clamp(6px, 2vw, 12px);
+    }
+
+    .ref-main-nav button {
+      font-size: 10.5px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
   }
   .ref-sub-row {
     height: 44px;

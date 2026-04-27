@@ -1,0 +1,26 @@
+---
+description: 상황별로 이 저장소 .cursor/skills 플레이북을 연다. 글로벌 skill은 확인 시에만 보조 참조.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Skill 라우터
+
+## 우선순위
+
+1. **이 저장소** `.cursor/skills/<이름>/SKILL.md` 를 먼저 연다
+2. `~/.cursor/skills` 는 **실제로 경로가 존재하는지 확인한 경우에만** 보조 참조한다
+3. 글로벌 SP/GStack skill이 **있다고 가정하지 않는다** — 없으면 이 저장소 플레이북만 사용
+
+## 상황 → 로컬 skill
+
+| 상황 | 열 파일 |
+|------|---------|
+| UI 점검·시각적 디버그 | `.cursor/skills/ui-debug/SKILL.md` |
+| 구조·범위 리뷰 (SP 성격) | `.cursor/skills/sp-reviewer/SKILL.md` |
+| 기능 빌드·계획 실행 (GStack 연계) | `.cursor/skills/gstack-feature-builder/SKILL.md` |
+| 제안 정리·반영 절차 | `.cursor/skills/proposal-integrator/SKILL.md` |
+| Vercel·Next 빌드 배포 | `.cursor/skills/deploy-debugger/SKILL.md` |
+| 레거시 (명시 허용 시) | `.cursor/skills/legacy-migration/SKILL.md` |
+
+코드 수정은 플레이북의 승인 게이트를 통과한 뒤에만 진행한다.

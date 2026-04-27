@@ -1,0 +1,23 @@
+---
+description: 제안은 PROPOSAL_INBOX에 정리하고 분류·승인 후 문서/rule/skill/task에 반영. 코드 즉시 반영 금지.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Proposal 통합
+
+## 절대 하지 않을 것
+
+- 채팅·이슈의 제안을 **확인 없이 코드에 바로 반영**하지 않는다
+
+## 절차
+
+1. 루트 `PROPOSAL_INBOX.md`에 항목 추가 (ID, 출처, 요약)
+2. 반영 위치 분류: `docs` | `rule` | `skill` | `task` | `code` (예정)
+3. 사용자 승인 후:
+   - 문서·rule·skill·`TASK.md` 등 **해당 레이어**에 반영
+   - 코드 변경이 필요하면 **별도 승인·작업**으로 분리
+
+## 중복
+
+- 긴 본문은 `AGENTS.md`에만 두고, rule에는 절차만 유지한다

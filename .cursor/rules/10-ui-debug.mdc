@@ -1,0 +1,13 @@
+---
+description: UI 디버그 시 AGENTS.md·UI_ACCEPTANCE 준수, 재현·범위 한정, 승인 후 수정.
+globs: ["app/**/*", "components/**/*", "styles.css"]
+alwaysApply: false
+---
+
+# UI 디버그
+
+- 먼저 `AGENTS.md`, `UI_ACCEPTANCE.md`를 연계한다
+- 재현 단계, viewport, 관련 파일(`app/`, `components/`, `styles.css`)을 명시한다
+- 한 번에 한 영역; 메인(`app/page.tsx`) 대비 회귀 리스크를 적는다
+- **수정은 사용자 승인 후**; 분석·계획만 먼저 제시할 수 있다
+- 플레이북: `.cursor/skills/ui-debug/SKILL.md`

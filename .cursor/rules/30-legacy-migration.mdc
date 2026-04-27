@@ -1,0 +1,12 @@
+---
+description: 루트 레거시 HTML/CSS/JS/server.js — 기본 수정 금지, 명시 요청 시에만. Next가 실사용 기준.
+globs: ["*.html", "*.css", "script.js", "content-data.js", "server.js"]
+alwaysApply: false
+---
+
+# 레거시 마이그레이션
+
+- 루트 HTML, CSS, JS, `server.js`: **명시적으로 허용하기 전까지 수정하지 않음**
+- 실사용·디자인 기준은 `app/`, `components/`, `styles.css`, `AGENTS.md`
+- 레거시는 참고·마이그레이션 소스로만 다룬다
+- 플레이북: `.cursor/skills/legacy-migration/SKILL.md`
