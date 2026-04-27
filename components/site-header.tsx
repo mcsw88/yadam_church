@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getMenuKeyFromPath, mainMenuItems, type MenuKey, submenuMap } from "../lib/navigation";
 
 type MenuPhase = "closed" | "opening" | "open" | "closing";
@@ -35,6 +35,19 @@ export function SiteHeader() {
 
   const submenuItems = useMemo(() => submenuMap[visibleSubmenuKey], [visibleSubmenuKey]);
 
+  const prefetchSubmenuGroup = useCallback((menuKey: MenuKey) => {
+    for (const item of submenuMap[menuKey]) {
+      if (prefetchedHrefsRef.current.has(item.href)) continue;
+      prefetchedHrefsRef.current.add(item.href);
+      void router.prefetch(item.href);
+    }
+  }, [router]);
+
+  /** 현재 URL이 속한 대메뉴의 소메뉴는 항상 워밍 — 다른 대메뉴로 첫 이동 전에도 형제 탭이 빨라짐 */
+  useEffect(() => {
+    prefetchSubmenuGroup(activePathMenu);
+  }, [activePathMenu, prefetchSubmenuGroup]);
+
   const clearCloseTimer = () => {
     if (!closeTimerRef.current) return;
     clearTimeout(closeTimerRef.current);
@@ -53,14 +66,6 @@ export function SiteHeader() {
       setMenuPhase("open");
       openCommitRef.current = null;
     }, 0);
-  };
-
-  const prefetchSubmenuGroup = (menuKey: MenuKey) => {
-    for (const item of submenuMap[menuKey]) {
-      if (prefetchedHrefsRef.current.has(item.href)) continue;
-      prefetchedHrefsRef.current.add(item.href);
-      void router.prefetch(item.href);
-    }
   };
 
   const openMenu = (menuKey: MenuKey) => {
@@ -107,6 +112,8 @@ export function SiteHeader() {
                   key={key}
                   type="button"
                   className={highlightedMenuKey === key ? "is-active" : ""}
+                  onMouseEnter={() => prefetchSubmenuGroup(key)}
+                  onFocus={() => prefetchSubmenuGroup(key)}
                   onClick={() => openMenu(key)}
                 >
                   {label}
