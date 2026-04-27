@@ -201,6 +201,12 @@ a:visited {
   justify-self: end;
 }
 
+/* 레거시 .html: trailing 래퍼 없이 오시는길만 3열에 붙는 경우 */
+.ref-top-row > .ref-cta {
+  grid-column: 3;
+  justify-self: end;
+}
+
 .ref-cta {
   background: var(--accent-1);
   color: #fff;
@@ -212,77 +218,78 @@ a:visited {
   flex-shrink: 0;
 }
 
-/* 좁은 화면: 2행 그리드(로고+CTA / 대메뉴 전체 너비)로 겹침 방지, 글씨 축소 */
+/* 좁은 화면: 상단은 항상 1행(로고 | 대메뉴 | 오시는길) — 폭에 비례해 글씨·로고·버튼만 축소 */
 @media (max-width: 1200px) {
   .ref-top-row {
     height: auto;
-    min-height: 0;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      "hdr-logo hdr-cta"
-      "hdr-nav hdr-nav";
-    column-gap: clamp(8px, 2vw, 16px);
-    row-gap: 10px;
-    align-items: center;
+    min-height: 56px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    column-gap: clamp(2px, 0.9vw, 16px);
   }
 
   .ref-logo {
-    grid-area: hdr-logo;
-    grid-column: auto;
-    justify-self: start;
     flex-shrink: 0;
     min-width: 0;
   }
 
-  .ref-header-trailing {
-    grid-area: hdr-cta;
-    grid-column: auto;
-    justify-self: end;
-    gap: 8px;
-  }
-
-  /* 레거시 .html: 오시는길이 trailing 래퍼 없이 바로 붙은 경우 */
-  .ref-top-row > .ref-cta {
-    grid-area: hdr-cta;
-    justify-self: end;
+  .ref-logo img {
+    width: clamp(28px, 6.8vw, 105px);
+    max-height: clamp(28px, 6.8vw, 105px);
   }
 
   .ref-main-nav {
-    grid-area: hdr-nav;
-    grid-column: auto;
-    justify-self: stretch;
-    width: 100%;
-    max-width: 100%;
+    gap: clamp(1px, 0.35vw + 1px, 18px);
+    row-gap: 4px;
     min-width: 0;
+    max-width: 100%;
+    flex-wrap: nowrap;
     justify-content: center;
-    gap: clamp(4px, 1.2vw, 12px);
-    row-gap: 6px;
   }
 
   .ref-main-nav a,
   .ref-main-nav button {
-    font-size: clamp(8px, 0.1rem + 2vw, 12px);
-    letter-spacing: -0.04em;
-    flex-shrink: 1;
-    min-width: 0;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.2;
-    max-width: 100%;
+    font-size: clamp(7px, 0.06rem + 1.95vw, 13.5px);
+    letter-spacing: -0.05em;
+    line-height: 1.15;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  .ref-logo img {
-    width: clamp(40px, 9.5vw, 95px);
-    max-height: clamp(40px, 9.5vw, 95px);
+  .ref-header-trailing {
+    flex-shrink: 0;
+    gap: 0;
   }
 
   .ref-cta {
-    padding: clamp(5px, 0.1rem + 0.35vw, 9px) clamp(6px, 0.2rem + 0.5vw, 14px);
-    font-size: clamp(7px, 0.08rem + 1.75vw, 10px);
+    padding: clamp(3px, 0.45vw + 2px, 10px) clamp(4px, 0.9vw + 3px, 16px);
+    font-size: clamp(6.5px, 0.05rem + 1.45vw, 10px);
+    border-radius: 999px;
+  }
+}
+
+@media (max-width: 400px) {
+  .ref-top-row {
+    column-gap: clamp(1px, 0.5vw, 8px);
+  }
+
+  .ref-logo img {
+    width: clamp(24px, 6vw, 72px);
+    max-height: clamp(24px, 6vw, 72px);
+  }
+
+  .ref-main-nav {
+    gap: clamp(0px, 0.2vw + 0.5px, 8px);
+  }
+
+  .ref-main-nav a,
+  .ref-main-nav button {
+    font-size: clamp(6.5px, 0.04rem + 1.72vw, 11px);
+  }
+
+  .ref-cta {
+    padding: clamp(2px, 0.35vw + 1px, 8px) clamp(3px, 0.7vw + 2px, 12px);
+    font-size: clamp(6px, 0.04rem + 1.25vw, 9px);
   }
 }
 
