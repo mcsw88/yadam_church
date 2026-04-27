@@ -218,14 +218,14 @@ a:visited {
   flex-shrink: 0;
 }
 
-/* 좁은 화면: 상단은 항상 1행(로고 | 대메뉴 | 오시는길) — 폭에 비례해 글씨·로고·버튼만 축소 */
+/* 좁은 화면: 1행 유지 — 하한 없이 뷰포트 비율(vw)로만 축소, 데스크톱 톤은 max로 상한 */
 @media (max-width: 1200px) {
   .ref-top-row {
     height: auto;
-    min-height: 56px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    column-gap: clamp(2px, 0.9vw, 16px);
+    min-height: 0;
+    padding-top: min(10px, 1.6vw);
+    padding-bottom: min(10px, 1.6vw);
+    column-gap: min(16px, 1.4vw);
   }
 
   .ref-logo {
@@ -234,13 +234,13 @@ a:visited {
   }
 
   .ref-logo img {
-    width: clamp(28px, 6.8vw, 105px);
-    max-height: clamp(28px, 6.8vw, 105px);
+    width: min(105px, 7vw);
+    max-height: min(105px, 7vw);
   }
 
   .ref-main-nav {
-    gap: clamp(1px, 0.35vw + 1px, 18px);
-    row-gap: 4px;
+    gap: min(18px, 2vw);
+    row-gap: min(6px, 0.7vw);
     min-width: 0;
     max-width: 100%;
     flex-wrap: nowrap;
@@ -249,7 +249,7 @@ a:visited {
 
   .ref-main-nav a,
   .ref-main-nav button {
-    font-size: clamp(7px, 0.06rem + 1.95vw, 13.5px);
+    font-size: min(13.5px, 3.5vw);
     letter-spacing: -0.05em;
     line-height: 1.15;
     white-space: nowrap;
@@ -262,34 +262,9 @@ a:visited {
   }
 
   .ref-cta {
-    padding: clamp(3px, 0.45vw + 2px, 10px) clamp(4px, 0.9vw + 3px, 16px);
-    font-size: clamp(6.5px, 0.05rem + 1.45vw, 10px);
+    padding: min(10px, 1.15vw) min(16px, 2.4vw);
+    font-size: min(10px, 2.55vw);
     border-radius: 999px;
-  }
-}
-
-@media (max-width: 400px) {
-  .ref-top-row {
-    column-gap: clamp(1px, 0.5vw, 8px);
-  }
-
-  .ref-logo img {
-    width: clamp(24px, 6vw, 72px);
-    max-height: clamp(24px, 6vw, 72px);
-  }
-
-  .ref-main-nav {
-    gap: clamp(0px, 0.2vw + 0.5px, 8px);
-  }
-
-  .ref-main-nav a,
-  .ref-main-nav button {
-    font-size: clamp(6.5px, 0.04rem + 1.72vw, 11px);
-  }
-
-  .ref-cta {
-    padding: clamp(2px, 0.35vw + 1px, 8px) clamp(3px, 0.7vw + 2px, 12px);
-    font-size: clamp(6px, 0.04rem + 1.25vw, 9px);
   }
 }
 
