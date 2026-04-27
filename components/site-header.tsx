@@ -103,6 +103,12 @@ export function SiteHeader() {
                 {label}
               </button>
             ))}
+            <Link
+              className={`ref-main-nav-location${pathname.startsWith("/location") ? " is-active" : ""}`}
+              href="/location"
+            >
+              오시는길 <span className="ref-cta-deploy-num">{DEPLOY_REVISION}</span>
+            </Link>
           </nav>
           <div className="ref-header-trailing">
             <Link className="ref-cta" href="/location">
