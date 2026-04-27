@@ -336,11 +336,50 @@ a:visited {
   color: var(--accent-1);
 }
 
-@media (min-width: 901px) {
+/* 가로 대메뉴는 넓은 화면에서만 — 이하(≤1200px)는 햄버거(겹침 방지) */
+@media (min-width: 1201px) {
   .ref-mobile-drawer,
   .ref-mobile-menu-toggle,
   .ref-mobile-scrim {
     display: none !important;
+  }
+}
+
+/* 901~1200px: 휴대·태블릿·좁은 창 — 데스크톱 가로내비 숨기고 햄버거 사용 */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .ref-main-nav--desktop {
+    display: none !important;
+  }
+
+  .ref-submenu-panel-floating--desktop {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .ref-mobile-menu-toggle {
+    display: inline-flex;
+  }
+
+  .ref-top-row {
+    height: auto;
+    min-height: 72px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ref-logo {
+    grid-column: 1;
+  }
+
+  .ref-header-trailing {
+    grid-column: 2;
+    gap: 8px;
+  }
+
+  .ref-cta {
+    padding: clamp(6px, 0.1rem + 0.4vw, 8px) clamp(8px, 0.2rem + 0.5vw, 12px);
+    font-size: clamp(8px, 0.1rem + 1.4vw, 10px);
   }
 }
 

@@ -62,7 +62,7 @@ export function SiteHeader() {
   }, [mobileMenuOpen]);
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 901px)");
+    const mq = window.matchMedia("(min-width: 1201px)");
     const onWiden = () => {
       if (mq.matches) {
         setMobileMenuOpen(false);
