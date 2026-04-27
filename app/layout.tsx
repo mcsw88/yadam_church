@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./../styles.css";
 import { SiteHeader } from "../components/site-header";
+import { DEPLOY_REVISION } from "../lib/deploy-revision";
 
 export const metadata: Metadata = {
   title: "Grace Path Church",
@@ -22,7 +23,12 @@ export default function RootLayout({
   const deployUrl = process.env.VERCEL_URL ?? "";
 
   return (
-    <html lang="ko" data-deploy-sha={deploySha || undefined} data-deploy-host={deployUrl || undefined}>
+    <html
+      lang="ko"
+      data-deploy-sha={deploySha || undefined}
+      data-deploy-host={deployUrl || undefined}
+      data-deploy-rev={String(DEPLOY_REVISION)}
+    >
       <body>
         <SiteHeader />
         {children}

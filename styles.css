@@ -218,6 +218,12 @@ a:visited {
   flex-shrink: 0;
 }
 
+.ref-cta-deploy-num {
+  font-weight: 700;
+  opacity: 0.9;
+  margin-left: 0.15em;
+}
+
 /* 좁은 화면: 1행 유지 — 하한 없이 뷰포트 비율(vw)로만 축소, 데스크톱 톤은 max로 상한 */
 @media (max-width: 1200px) {
   .ref-top-row {

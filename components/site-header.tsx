@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DEPLOY_REVISION } from "../lib/deploy-revision";
 import { getMenuKeyFromPath, mainMenuItems, type MenuKey, submenuMap } from "../lib/navigation";
 
 type MenuPhase = "closed" | "opening" | "open" | "closing";
@@ -105,7 +106,7 @@ export function SiteHeader() {
           </nav>
           <div className="ref-header-trailing">
             <Link className="ref-cta" href="/location">
-              오시는길
+              오시는길 <span className="ref-cta-deploy-num">{DEPLOY_REVISION}</span>
             </Link>
           </div>
         </div>
