@@ -1,10 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./../styles.css";
 import { SiteHeader } from "../components/site-header";
 
 export const metadata: Metadata = {
   title: "Grace Path Church",
   description: "예닮교회 웹사이트",
+};
+
+/* 없으면 iOS·Android가 레이아웃을 ~980px로 잡아 미디어쿼리·헤더가 “PC처럼” 보일 수 있음 */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

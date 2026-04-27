@@ -2106,8 +2106,15 @@ a:visited {
     padding-bottom: clamp(4px, 1.2vw, 12px);
   }
 
+  .page-main > .page-block--pagehead:first-of-type {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(4px, 1.2vw, 12px);
+  }
+
   .page-main > .page-block--pagehead:first-of-type > .ref-kicker:first-child {
-    margin-bottom: clamp(8px, 2.4vw, 18px);
+    margin-bottom: 0;
   }
 
   .page-main > .page-block--pagehead:first-of-type + .page-block--intro {
@@ -2147,6 +2154,11 @@ a:visited {
     margin: 14px 0 22px;
   }
 
+  .page-main > .page-block--pagehead:first-of-type > .page-title {
+    margin-top: 0;
+    line-height: 1.1;
+  }
+
   .page-main .page-subtitle {
     margin: 0 0 clamp(20px, 4vw, 28px);
   }
@@ -2177,7 +2189,8 @@ a:visited {
   }
 
   .page-title {
-    font-size: 54px;
+    font-size: clamp(28px, 9.2vw, 52px);
+    line-height: 1.12;
   }
 
   .page-grid-2,
