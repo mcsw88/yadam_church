@@ -70,8 +70,16 @@ export function SiteHeader() {
       }
     };
     onWiden();
-    mq.addEventListener("change", onWiden);
-    return () => mq.removeEventListener("change", onWiden);
+    try {
+      if (typeof mq.addEventListener === "function") {
+        mq.addEventListener("change", onWiden);
+        return () => mq.removeEventListener("change", onWiden);
+      }
+      mq.addListener(onWiden);
+      return () => mq.removeListener(onWiden);
+    } catch {
+      return undefined;
+    }
   }, []);
 
   const submenuItems = useMemo(() => submenuMap[visibleSubmenuKey], [visibleSubmenuKey]);

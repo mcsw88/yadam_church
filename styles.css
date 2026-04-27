@@ -237,6 +237,7 @@ a:visited {
   z-index: 110;
   background: #fff;
   border-bottom: 1px solid var(--divider-1);
+  max-height: min(72vh, calc(100vh - 88px));
   max-height: min(72vh, calc(100dvh - 88px));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
