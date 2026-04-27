@@ -67,6 +67,12 @@ a:visited {
   -webkit-backdrop-filter: none;
 }
 
+/* 모바일: 스크림 위에 로고·CTA·햄버거 행이 오도록 */
+.ref-header > .ref-container:first-child {
+  position: relative;
+  z-index: 120;
+}
+
 /* 모바일 Safari 등: 헤더 내 링크 기본 파란색 방지 */
 .ref-header a:link,
 .ref-header a:visited {
@@ -165,8 +171,15 @@ a:visited {
   color: var(--accent-1);
 }
 
-.ref-cta {
+.ref-header-trailing {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ref-cta {
   background: var(--accent-1);
   color: #fff;
   border-radius: 999px;
@@ -175,6 +188,146 @@ a:visited {
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.ref-mobile-menu-toggle {
+  display: none;
+  border: 0;
+  background: transparent;
+  padding: 6px;
+  margin: 0;
+  cursor: pointer;
+  color: var(--text-headline);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.ref-mobile-menu-toggle-bars {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: currentColor;
+  box-shadow:
+    0 -6px 0 currentColor,
+    0 6px 0 currentColor;
+}
+
+.ref-mobile-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-mobile-drawer {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 110;
+  background: #fff;
+  border-bottom: 1px solid var(--divider-1);
+  max-height: min(72vh, calc(100dvh - 88px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ref-mobile-drawer.is-open {
+  display: block;
+}
+
+.ref-mobile-drawer-inner {
+  padding-top: 4px;
+  padding-bottom: 16px;
+}
+
+.ref-mobile-accordion {
+  border-bottom: 1px solid var(--divider-1);
+}
+
+.ref-mobile-accordion-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  font-family:
+    "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--text-headline);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-mobile-accordion-trigger::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid var(--accent-6);
+  border-bottom: 1px solid var(--accent-6);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin-right: 4px;
+  transition: transform 0.2s ease;
+}
+
+.ref-mobile-accordion-trigger.is-expanded::after {
+  transform: rotate(-135deg);
+  margin-top: 4px;
+}
+
+.ref-mobile-accordion-panel {
+  padding: 0 0 12px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ref-mobile-sublink {
+  display: block;
+  width: 100%;
+  padding: 10px 0 10px 8px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  font-family:
+    "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color: var(--text-paragraph);
+  text-align: left;
+  cursor: pointer;
+  border-left: 2px solid var(--divider-1);
+  padding-left: 12px;
+  margin-left: 2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-mobile-sublink:active {
+  color: var(--accent-1);
+}
+
+@media (min-width: 901px) {
+  .ref-mobile-drawer,
+  .ref-mobile-menu-toggle,
+  .ref-mobile-scrim {
+    display: none !important;
+  }
 }
 
 .ref-cta:visited {
@@ -1730,61 +1883,33 @@ a:visited {
   .ref-container {
     width: calc(100% - 32px);
   }
-  .ref-main-nav {
-    position: static;
-    transform: none;
-    margin-left: auto;
-    margin-right: auto;
-    gap: clamp(6px, 1.8vw, 16px);
+  .ref-main-nav--desktop {
+    display: none !important;
   }
+
+  .ref-submenu-panel-floating--desktop {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .ref-mobile-menu-toggle {
+    display: inline-flex;
+  }
+
   .ref-top-row {
-    height: 84px;
+    height: auto;
+    min-height: 72px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
-  /* 좁은 모바일: 한 줄에 로고·5메뉴·CTA가 겹침 → 2행으로 분리 */
-  @media (max-width: 640px) {
-    .ref-top-row {
-      flex-wrap: wrap;
-      height: auto;
-      min-height: 72px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      row-gap: 10px;
-      align-items: center;
-    }
+  .ref-cta {
+    padding: 8px 12px;
+    font-size: 10px;
+  }
 
-    .ref-logo {
-      order: 1;
-      flex: 0 0 auto;
-    }
-
-    .ref-cta {
-      order: 2;
-      margin-left: auto;
-      flex: 0 0 auto;
-      padding: 8px 12px;
-      font-size: 10px;
-    }
-
-    .ref-main-nav {
-      order: 3;
-      flex: 1 1 100%;
-      width: 100%;
-      max-width: 100%;
-      margin-left: 0;
-      margin-right: 0;
-      justify-content: center;
-      flex-wrap: wrap;
-      row-gap: 8px;
-      column-gap: clamp(6px, 2vw, 12px);
-    }
-
-    .ref-main-nav button {
-      font-size: 10.5px;
-      line-height: 1.35;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-    }
+  .ref-header-trailing {
+    gap: 8px;
   }
   .ref-sub-row {
     height: 44px;

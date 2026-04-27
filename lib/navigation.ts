@@ -2,6 +2,15 @@ export type MenuKey = "about" | "ministries" | "news" | "gallery" | "contact";
 
 export type SubmenuItem = { label: string; href: string };
 
+/** 데스크톱·모바일 공통 대메뉴 순서 */
+export const mainMenuItems: { key: MenuKey; label: string }[] = [
+  { key: "about", label: "교회소개" },
+  { key: "ministries", label: "사역소개" },
+  { key: "news", label: "교회소식" },
+  { key: "gallery", label: "갤러리" },
+  { key: "contact", label: "문의하기" },
+];
+
 export const submenuMap: Record<MenuKey, SubmenuItem[]> = {
   about: [
     { label: "인사말", href: "/about/intro" },
