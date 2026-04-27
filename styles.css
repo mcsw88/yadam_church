@@ -293,6 +293,7 @@ a:visited {
 
   /* 네비 안 오시는길: 대메뉴 텍스트가 아니라 축소 pill (PC 우측 CTA와 동일 톤) */
   .ref-main-nav .ref-main-nav-location {
+    margin-left: auto;
     background: var(--accent-1);
     color: #fff;
     border-radius: 999px;
