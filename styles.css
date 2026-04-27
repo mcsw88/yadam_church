@@ -336,6 +336,41 @@ a:visited {
   color: var(--accent-1);
 }
 
+.ref-mobile-drawer-standalone {
+  display: block;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--divider-1);
+  font-size: 14px;
+  font-weight: 700;
+  font-family:
+    "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--text-headline);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-mobile-drawer-standalone:link,
+.ref-mobile-drawer-standalone:visited {
+  color: var(--text-headline);
+}
+
+.ref-mobile-drawer-standalone:active {
+  color: var(--accent-1);
+}
+
+/* ≤1200px: 상단은 로고+햄버거만 — CTA는 드로어로 이동, 로고는 찌그러짐 방지 */
+@media (max-width: 1200px) {
+  .ref-header-trailing .ref-cta {
+    display: none !important;
+  }
+
+  .ref-logo {
+    flex-shrink: 0;
+    min-width: auto;
+  }
+}
+
 /* 가로 대메뉴는 넓은 화면에서만 — 이하(≤1200px)는 햄버거(겹침 방지) */
 @media (min-width: 1201px) {
   .ref-mobile-drawer,
@@ -375,11 +410,6 @@ a:visited {
   .ref-header-trailing {
     grid-column: 2;
     gap: 8px;
-  }
-
-  .ref-cta {
-    padding: clamp(6px, 0.1rem + 0.4vw, 8px) clamp(8px, 0.2rem + 0.5vw, 12px);
-    font-size: clamp(8px, 0.1rem + 1.4vw, 10px);
   }
 }
 
@@ -1949,7 +1979,7 @@ a:visited {
     display: inline-flex;
   }
 
-  /* 모바일: 대메뉴 숨김 → 로고 | 오시는길·햄버거 2열(겹침 방지) */
+  /* 모바일: 대메뉴 숨김 → 로고 | 햄버거 */
   .ref-top-row {
     height: auto;
     min-height: 72px;
@@ -1967,10 +1997,6 @@ a:visited {
     gap: 8px;
   }
 
-  .ref-cta {
-    padding: clamp(6px, 0.1rem + 0.4vw, 8px) clamp(8px, 0.2rem + 0.5vw, 12px);
-    font-size: clamp(8px, 0.1rem + 1.4vw, 10px);
-  }
   .ref-sub-row {
     height: 44px;
   }

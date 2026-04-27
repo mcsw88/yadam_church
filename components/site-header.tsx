@@ -236,6 +236,16 @@ export function SiteHeader() {
               ) : null}
             </div>
           ))}
+          <Link
+            className="ref-mobile-drawer-standalone"
+            href="/location"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setMobileAccordionKey(null);
+            }}
+          >
+            오시는길
+          </Link>
         </div>
       </div>
 
