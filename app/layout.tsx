@@ -12,8 +12,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const deploySha = process.env.VERCEL_GIT_COMMIT_SHA ?? "";
+  const deployUrl = process.env.VERCEL_URL ?? "";
+
   return (
-    <html lang="ko">
+    <html lang="ko" data-deploy-sha={deploySha || undefined} data-deploy-host={deployUrl || undefined}>
       <body>
         <SiteHeader />
         {children}
