@@ -1,0 +1,39 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background-color: var(--color-dado-accent);
+  animation: loading-dots-pulse 1.2s ease-in-out infinite;
+  opacity: 0.45;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes loading-dots-pulse {
+  0%,
+  70%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

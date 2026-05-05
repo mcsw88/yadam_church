@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환대에서 성소로 - 안양예담교회</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', '"Noto Serif KR"', 'serif'],
+                        sans: ['"Pretendard"', '"Noto Sans KR"', 'sans-serif'],
+                    },
+                    colors: {
+                        dado: {
+                            bg: '#F5F4F0',
+                            dark: '#2A2826',
+                            accent: '#8B7D6B',
+                            light: '#E8E6E1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React & Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <style>
+        body {
+            background-color: #F5F4F0;
+            color: #2A2826;
+            cursor: none;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
+        .image-container { overflow: hidden; position: relative; }
+        ::selection { background-color: #8B7D6B; color: #F5F4F0; }
+
+        /* --- Gallery Masonry CSS --- */
+        .masonry-grid { 
+            column-count: 1; 
+            column-gap: 2rem; 
+        }
+        @media (min-width: 768px) { 
+            .masonry-grid { column-count: 2; } 
+        }
+        .masonry-item { 
+            break-inside: avoid; 
+            margin-bottom: 2rem; 
+            transform: translateZ(0); 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { motion, AnimatePresence, useScroll, useTransform, useInView } = window.Motion;
+
+        const menuItems = [
+            { id: 'about', label: '교회소개', sub: ['인사말', '비전 · 핵심가치', '섬기는 이들', '예배시간'] },
+            { id: 'ministries', label: '사역소개', sub: ['주일사역', '선교 · 봉사'] },
+            { id: 'news', label: '교회소식', sub: ['공지사항', '행사소식'] },
+            { id: 'gallery', label: '갤러리', sub: ['행사사진'] },
+            { id: 'contact', label: '문의하기', sub: ['자유게시판'] },
+        ];
+
+        // --- Shared Components ---
+
+        const CustomCursor = () => {
+            const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+            const [isHovering, setIsHovering] = useState(false);
+            const [isDarkTheme, setIsDarkTheme] = useState(false);
+            const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+            useEffect(() => {
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    setIsTouchDevice(true);
+                    return; 
+                }
+
+                const updatePos = (e) => {
+                    setMousePosition({ x: e.clientX, y: e.clientY });
+                    const el = document.elementFromPoint(e.clientX, e.clientY);
+                    if (el) {
+                        const darkSection = el.closest('[data-theme="dark"]');
+                        setIsDarkTheme(!!darkSection);
+                    }
+                };
+                const handleHover = (e) => {
+                    const target = e.target.closest('a, button, .hover-trigger, .group');
+                    setIsHovering(!!target);
+                };
+                window.addEventListener('mousemove', updatePos);
+                window.addEventListener('mouseover', handleHover);
+                return () => {
+                    window.removeEventListener('mousemove', updatePos);
+                    window.removeEventListener('mouseover', handleHover);
+                };
+            }, []);
+
+            if (isTouchDevice) return null;
+
+            return (
+                <>
+                    <motion.div
+                        className="fixed top-0 left-0 w-96 h-96 rounded-full pointer-events-none z-[1]"
+                        animate={{
+                            x: mousePosition.x - 192,
+                            y: mousePosition.y - 192,
+                            opacity: isDarkTheme ? 0.15 : 0,
+                        }}
+                        transition={{ type: 'tween', ease: 'linear', duration: 0 }}
+                        style={{
+                            background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)',
+                            mixBlendMode: 'overlay'
+                        }}
+                    />
+                    <motion.div
+                        className="fixed top-0 left-0 w-6 h-6 rounded-full border border-dado-dark pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center bg-white"
+                        animate={{
+                            x: mousePosition.x - 12,
+                            y: mousePosition.y - 12,
+                            scale: isHovering ? 2.5 : 1,
+                            backgroundColor: isHovering ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.2)',
+                            borderWidth: isHovering ? '0px' : '1px'
+                        }}
+                        transition={{ type: 'tween', ease: 'backOut', duration: 0.15 }}
+                    >
+                        {isHovering && <span className="text-[4px] font-sans text-black font-bold">VIEW</span>}
+                    </motion.div>
+                </>
+            );
+        };
+
+        const FadeIn = ({ children, delay = 0, className = "" }) => (
+            <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 1, delay, ease: [0.25, 0.1, 0.25, 1] }}
+                className={className}
+            >
+                {children}
+            </motion.div>
+        );
+
+        const ParallaxImage = ({ src, alt, className = "", grayscale = false }) => {
+            const ref = useRef(null);
+            const { scrollYProgress } = useScroll({
+                target: ref,
+                offset: ["start end", "end start"]
+            });
+            const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+
+            return (
+                <div ref={ref} className={`image-container ${className}`}>
+                    <motion.img 
+                        src={src} 
+                        alt={alt}
+                        style={{ y, scale: 1.3 }} 
+                        whileHover={{ scale: 1.35 }} 
+                        transition={{ scale: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } }}
+                        className={`w-full h-full object-cover origin-center ${grayscale ? 'grayscale' : ''}`}
+                    />
+                </div>
+            );
+        };
+
+        const fetchWithBackoff = async (url, options, retries = 5) => {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (e) {
+                    if (i === retries - 1) throw e;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        };
+
+        const PrayerAssistant = () => {
+            const [inputText, setInputText] = useState('');
+            const [response, setResponse] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleShare = async () => {
+                if (!inputText.trim()) return;
+                setIsLoading(true);
+                setError('');
+                const apiKey = ""; 
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: inputText }] }],
+                    systemInstruction: {
+                        parts: [{ text: "당신은 따뜻한 기독교 목회자입니다. 사용자의 고민에 맞는 성경 구절 1개와 짧은 기도문을 따뜻하고 우아하게 제공해주세요." }]
+                    }
+                };
+
+                try {
+                    const data = await fetchWithBackoff(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) setResponse(text);
+                    else throw new Error();
+                } catch (err) {
+                    setError('잠시 후 다시 시도해주세요.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            return (
+                <section data-theme="dark" className="py-32 px-6 md:px-24 bg-dado-dark text-dado-bg">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <FadeIn>
+                            <h2 className="font-serif text-4xl md:text-5xl mb-6 text-dado-accent italic">✨ 마음의 성소</h2>
+                            <p className="font-sans text-gray-400 text-sm mb-12">현재의 고민이나 기도 제목을 나누어주세요.</p>
+                        </FadeIn>
+                        <FadeIn delay={0.2}>
+                            <div className="flex flex-col gap-8 max-w-2xl mx-auto">
+                                <textarea 
+                                    value={inputText}
+                                    onChange={(e) => setInputText(e.target.value)}
+                                    placeholder="어떤 마음이든 괜찮습니다..."
+                                    className="w-full bg-transparent border-b border-gray-600 focus:border-dado-accent outline-none py-4 text-center font-sans text-lg resize-none text-white"
+                                    rows="2"
+                                ></textarea>
+                                <button onClick={handleShare} disabled={isLoading} className="hover-trigger border border-gray-600 px-8 py-3 rounded-full mx-auto hover:bg-dado-bg hover:text-dado-dark transition-colors disabled:opacity-50">
+                                    {isLoading ? '기도하는 중...' : '마음 나누기 ✨'}
+                                </button>
+                            </div>
+                        </FadeIn>
+                        {response && (
+                            <FadeIn delay={0.1}>
+                                <div className="mt-16 p-8 border border-gray-700 rounded-2xl bg-black/20 font-serif leading-relaxed text-left">
+                                    <div className="whitespace-pre-wrap text-lg text-dado-bg leading-loose">{response}</div>
+                                </div>
+                            </FadeIn>
+                        )}
+                    </div>
+                </section>
+            );
+        };
+
+        const ministriesData = {
+            sunday: [
+                { id: 's1', title: '예배 안내 사역', subtitle: '환대의 첫걸음', image: 'https://images.unsplash.com/photo-1511649475669-e288648b2339?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '예배당을 찾는 모든 분들을 가장 먼저 맞이하는 사역입니다. 따뜻한 미소와 친절한 안내로 낯선 발걸음이 편안한 예배의 자리로 이어지도록 돕습니다.' },
+                { id: 's2', title: '예루살렘 찬양대', subtitle: '영감 있는 찬양', image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '주일 예배의 찬양을 담당합니다. 기도로 준비된 찬양을 통해 회중들의 마음을 열고 하나님의 임재를 깊이 경험하도록 돕는 예배의 중요한 기둥입니다.' },
+                { id: 's3', title: '새가족 섬김', subtitle: '아름다운 정착', image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '처음 오신 분들이 교회 공동체에 잘 정착할 수 있도록 새가족 교육과 친교를 담당합니다. 한 영혼이 온전한 성도로 세워지는 귀한 여정을 함께합니다.' }
+            ],
+            mission: [
+                { id: 'm1', title: '지역 사회 봉사', subtitle: '이웃을 향한 사랑', image: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '안양 지역의 소외된 이웃을 돌보는 사역입니다. 정기적인 나눔과 봉사를 통해 그리스도의 사랑을 삶의 현장에서 실천하고 환대를 나눕니다.' },
+                { id: 'm2', title: '해외 단기 선교', subtitle: '땅끝까지 전하는 복음', image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '매년 현지 선교사님과 협력하여 단기 선교팀을 파송합니다. 어린이 사역, 의료 봉사, 문화 교류 등을 진행하며 열방을 향한 하나님의 마음을 품습니다.' }
+            ]
+        };
+
+        const newsData = {
+            notices: [
+                { id: 'n1', type: 'notice', title: '추수감사주일 예배 및 성찬식 안내', subtitle: '2026. 11. 15', content: '다음 주일은 추수감사주일로 지킵니다. 1, 2부 예배 중에 성찬식이 진행되오니 기도로 준비해 주시기 바랍니다. 또한, 주변의 어려운 이웃을 위한 사랑의 쌀 모으기 행사가 1층 로비에서 진행됩니다.' },
+                { id: 'n2', type: 'notice', title: '하반기 제자훈련 수료식', subtitle: '2026. 11. 08', content: '12주간의 제자훈련 과정을 마친 수료생들의 수료식이 오늘 2부 예배 중에 있습니다. 성도님들의 많은 축하와 격려 부탁드립니다.' },
+                { id: 'n3', type: 'notice', title: '교회학교 겨울 성경학교 교사 모집', subtitle: '2026. 11. 01', content: '다가오는 겨울 성경학교를 위해 헌신하실 교사를 모집합니다. 다음 세대를 신앙으로 세우는 귀한 사역에 동참하실 분들은 사무실로 신청해 주시기 바랍니다.' },
+                { id: 'n4', type: 'notice', title: '11월 정기 당회 안내', subtitle: '2026. 10. 25', content: '정기 당회가 11월 첫째 주 예배 후 목양실에서 있습니다. 모든 당회원들은 기도로 준비하여 참석해 주시기 바랍니다.' },
+                { id: 'n5', type: 'notice', title: '새가족 환영회 및 수료식', subtitle: '2026. 10. 18', content: '새가족 4주 과정을 마치신 분들을 환영하는 시간이 있습니다. 공동체의 한 가족이 되신 것을 진심으로 축하드립니다.' },
+                { id: 'n6', type: 'notice', title: '하반기 대심방 일정 안내', subtitle: '2026. 10. 11', content: '각 가정의 기도제목을 나누는 하반기 대심방이 시작됩니다. 구역장님을 통해 일정을 조율해 주시기 바랍니다.' },
+                { id: 'n7', type: 'notice', title: '성전 미화 및 대청소', subtitle: '2026. 10. 04', content: '가을을 맞이하여 성전 대청소를 실시합니다. 성도님들의 많은 동참을 통해 아름다운 성소를 가꾸어 갑니다.' },
+                { id: 'n8', type: 'notice', title: '청년부 가을 영성 수련회', subtitle: '2026. 09. 27', content: '청년부 가을 엠티가 이번 주 금요일부터 1박 2일간 양평 수양관에서 진행됩니다. 청년들의 영적 회복을 위해 기도 부탁드립니다.' }
+            ],
+            events: [
+                { id: 'e1', type: 'event', title: '가을 음악회 "성소에 울리는 찬양"', subtitle: '2026. 10. 25', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '안양예담교회 예루살렘 찬양대와 오케스트라가 함께하는 가을 음악회에 성도님들을 초대합니다. 다과와 친교의 시간이 준비되어 있으니 이웃과 함께 오셔서 은혜의 시간 나누시길 바랍니다.' },
+                { id: 'e2', type: 'event', title: '전교인 가을 체육대회 "하나됨의 기쁨"', subtitle: '2026. 09. 10', image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '맑은 가을 하늘 아래 전교인이 모여 친교를 나누는 체육대회를 가졌습니다. 어린아이부터 어르신까지 모두가 하나 되는 뜻깊은 시간이었습니다.' },
+                { id: 'e3', type: 'event', title: '여름 단기선교 파송식', subtitle: '2026. 07. 15', image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '필리핀으로 향하는 단기선교팀의 파송식이 있었습니다. 복음을 향한 열정으로 나아가는 발걸음을 축복합니다.' },
+                { id: 'e4', type: 'event', title: '부활절 연합 예배', subtitle: '2026. 04. 12', image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '부활하신 예수님의 사랑을 찬양하는 연합 예배를 드렸습니다. 성가대의 특별 찬양과 함께 생명의 기쁨을 나누었습니다.' },
+                { id: 'e5', type: 'event', title: '봄맞이 이웃 초청 잔치', subtitle: '2026. 03. 20', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '지역 주민들을 교회로 초대하여 식사를 나누고 교제하는 시간을 가졌습니다. 작은 섬김을 통해 그리스도의 향기가 전해지길 소망합니다.' },
+                { id: 'e6', type: 'event', title: '청년부 겨울 수련회', subtitle: '2026. 01. 25', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '"다시, 복음으로"라는 주제로 진행된 수련회. 깊은 기도와 나눔 속에서 청년들의 삶이 새롭게 결단되는 은혜의 시간이었습니다.' },
+                { id: 'e7', type: 'event', title: '성탄절 칸타타', subtitle: '2025. 12. 25', image: 'https://images.unsplash.com/photo-1543332143-4e8c27e32a20?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '아기 예수님의 탄생을 축하하는 성탄절 칸타타가 열렸습니다. 온 성도가 기쁨으로 하나 되어 영광의 찬양을 올려드렸습니다.' },
+                { id: 'e8', type: 'event', title: '추수감사절 과일 나눔', subtitle: '2025. 11. 17', image: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '한 해 동안 베풀어주신 은혜에 감사하며, 성도들이 정성껏 모은 과일을 지역 아동센터와 요양원에 전달했습니다.' }
+            ],
+            bulletins: [
+                { id: 'b1', type: 'bulletin', title: '11월 셋째 주일 주보', subtitle: '2026. 11. 15', call: '시편 100:1-5', hymn1: '찬송가 21장', prayer: '김장로 장로', scripture: '요한복음 15:1-8', sermonTitle: '참포도나무와 가지', hymn2: '찬송가 304장' },
+                { id: 'b2', type: 'bulletin', title: '11월 둘째 주일 주보', subtitle: '2026. 11. 08', call: '시편 95:1-6', hymn1: '찬송가 10장', prayer: '이권사 권사', scripture: '마태복음 5:13-16', sermonTitle: '세상의 소금과 빛', hymn2: '찬송가 502장' },
+                { id: 'b3', type: 'bulletin', title: '11월 첫째 주일 주보', subtitle: '2026. 11. 01', call: '시편 1:1-6', hymn1: '찬송가 1장', prayer: '박장로 장로', scripture: '시편 23:1-6', sermonTitle: '여호와는 나의 목자시니', hymn2: '찬송가 384장' },
+                { id: 'b4', type: 'bulletin', title: '10월 넷째 주일 주보', subtitle: '2026. 10. 25', call: '이사야 43:1-3', hymn1: '찬송가 40장', prayer: '최안수 집사', scripture: '빌립보서 4:4-7', sermonTitle: '주 안에서 항상 기뻐하라', hymn2: '찬송가 412장' },
+                { id: 'b5', type: 'bulletin', title: '10월 셋째 주일 주보', subtitle: '2026. 10. 18', call: '시편 121:1-8', hymn1: '찬송가 64장', prayer: '정권사 권사', scripture: '로마서 8:28', sermonTitle: '합력하여 선을 이루시는 하나님', hymn2: '찬송가 301장' },
+                { id: 'b6', type: 'bulletin', title: '10월 둘째 주일 주보', subtitle: '2026. 10. 11', call: '시편 27:1-4', hymn1: '찬송가 35장', prayer: '강장로 장로', scripture: '히브리서 11:1-3', sermonTitle: '믿음의 주요 온전하게 하시는 이', hymn2: '찬송가 545장' },
+                { id: 'b7', type: 'bulletin', title: '10월 첫째 주일 주보', subtitle: '2026. 10. 04', call: '시편 103:1-5', hymn1: '찬송가 20장', prayer: '조권사 권사', scripture: '갈라디아서 5:22-23', sermonTitle: '성령의 열매', hymn2: '찬송가 191장' },
+                { id: 'b8', type: 'bulletin', title: '9월 넷째 주일 주보', subtitle: '2026. 09. 27', call: '시편 84:1-4', hymn1: '찬송가 50장', prayer: '윤안수 집사', scripture: '에베소서 2:8-10', sermonTitle: '은혜로 구원을 받은 자', hymn2: '찬송가 310장' }
+            ]
+        };
+
+        // --- NEW: 4가지 규격(T1, T2, T3, T4)이 수학적으로 교차 배치된 갤러리 데이터 ---
+        const galleryData = [
+            { id: 'g1', type: 'gallery', year: 2026, date: '2026. 10. 25', title: '가을 음악회 "성소에 울리는 찬양"', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '아름다운 선율로 영광 돌리는 시간이었습니다.', scripture: '할렐루야 그의 성소에서 하나님을 찬양하며 (시편 150:1)', aspect: 'aspect-[3/5]' }, // T1: 갤러리의 주인공 (가장 큼, 절대 최대 규격)
+            { id: 'g2', type: 'gallery', year: 2026, date: '2026. 09. 10', title: '전교인 가을 체육대회', image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '모든 성도가 하나되는 기쁨의 축제.', scripture: '보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고 (시편 133:1)', aspect: 'aspect-square' }, // T3: 정방형 
+            { id: 'g3', type: 'gallery', year: 2026, date: '2026. 07. 15', title: '여름 단기선교 파송식', image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '열방을 향한 발걸음을 축복합니다.', scripture: '그러므로 너희는 가서 모든 민족을 제자로 삼아 (마태복음 28:19)', aspect: 'aspect-[3/2]' }, // T4: 가로형 (가장 짧음)
+            { id: 'g4', type: 'gallery', year: 2026, date: '2026. 04. 12', title: '부활절 연합 예배 성가대', image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '생명의 주님을 찬양합니다.', scripture: '예수께서 이르시되 나는 부활이요 생명이니 (요한복음 11:25)', aspect: 'aspect-[3/4]' }, // T2: 긴 세로형
+            { id: 'g5', type: 'gallery', year: 2026, date: '2026. 03. 20', title: '봄맞이 이웃 초청 잔치', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '그리스도의 향기를 이웃과 함께.', scripture: '이같이 너희 빛이 사람 앞에 비치게 하여 (마태복음 5:16)', aspect: 'aspect-square' }, // T3: T4 옆/아래 교차
+            { id: 'g6', type: 'gallery', year: 2025, date: '2025. 12. 25', title: '성탄절 칸타타', image: 'https://images.unsplash.com/photo-1543332143-4e8c27e32a20?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '아기 예수님의 탄생을 축하합니다.', scripture: '지극히 높은 곳에서는 하나님께 영광이요 (누가복음 2:14)', aspect: 'aspect-[3/4]' },
+            { id: 'g7', type: 'gallery', year: 2025, date: '2025. 11. 17', title: '추수감사절 과일 나눔', image: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', content: '감사의 열매를 이웃과 나눕니다.', scripture: '범사에 감사하라 이것이 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라 (데살로니가전서 5:18)', aspect: 'aspect-[3/2]' }
+        ];
+
+        const SlideOver = ({ isOpen, onClose, data }) => (
+            <AnimatePresence>
+                {isOpen && data && (
+                    <div className="fixed inset-0 z-[200] flex justify-end">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} onClick={onClose} className="absolute inset-0 bg-dado-dark/60 backdrop-blur-sm cursor-pointer" />
+                        <motion.div 
+                            initial={{ x: '100%' }} 
+                            animate={{ x: 0 }} 
+                            exit={{ x: '100%' }} 
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }} 
+                            className={`relative w-full max-w-lg h-full shadow-2xl flex flex-col overflow-y-auto ${data.type === 'gallery' ? 'bg-dado-dark text-dado-bg' : 'bg-dado-bg text-dado-dark'}`}
+                        >
+                            {data.type === 'gallery' && (
+                                <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,125,107,0.15)_0%,rgba(0,0,0,0)_70%)] pointer-events-none"></div>
+                            )}
+
+                            <button onClick={onClose} className={`absolute top-8 right-8 z-20 w-10 h-10 backdrop-blur rounded-full flex items-center justify-center transition-colors ${data.type === 'gallery' ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-white/80 text-black hover:bg-white'}`}>✕</button>
+                            
+                            {data.type === 'bulletin' ? (
+                                <div className="p-8 sm:p-12 mt-12 flex flex-col gap-6 font-serif text-center relative z-10">
+                                    <span className="font-sans text-xs tracking-widest text-dado-accent mb-2 block">ORDER OF WORSHIP</span>
+                                    <h2 className="text-4xl text-dado-dark italic mb-2">주일 예배 순서</h2>
+                                    <p className="font-sans text-sm text-gray-400 mb-10">{data.subtitle}</p>
+                                    
+                                    <div className="space-y-10 text-lg text-dado-dark">
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">예배의 부름</span>{data.call}</div>
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">신앙고백</span>사도신경</div>
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">찬송</span>{data.hymn1}</div>
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">대표기도</span>{data.prayer}</div>
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">성경봉독</span>{data.scripture}</div>
+                                        
+                                        <div className="py-10 border-y border-dado-light my-6 relative">
+                                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-dado-bg rotate-45 border-t border-l border-dado-light"></div>
+                                            <span className="block text-sm text-dado-accent mb-4 font-sans tracking-widest">말씀 선포</span>
+                                            <span className="text-3xl text-dado-dark italic leading-tight block">{data.sermonTitle}</span>
+                                            <span className="block text-sm text-gray-500 mt-4 font-sans">— 담임목사 손영숙 —</span>
+                                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-dado-bg rotate-45 border-b border-r border-dado-light"></div>
+                                        </div>
+                                        
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">봉헌 및 찬송</span>{data.hymn2}</div>
+                                        <div><span className="block text-sm text-dado-accent mb-2 font-sans tracking-widest">축도</span>담임목사</div>
+                                    </div>
+                                </div>
+                            ) : data.type === 'gallery' ? (
+                                <div className="p-8 sm:p-12 mt-12 flex flex-col h-full relative z-10">
+                                    <span className="font-sans text-xs tracking-widest text-dado-accent uppercase mb-4 block">{data.date}</span>
+                                    <h2 className="font-serif text-4xl italic leading-tight mb-8">{data.title}</h2>
+                                    
+                                    <div className="w-full mb-10 bg-black/50 p-2 rounded-lg relative overflow-hidden group">
+                                        <img src={data.image} alt={data.title} className="w-full h-auto object-contain rounded-sm max-h-[50vh]" />
+                                    </div>
+                                    
+                                    <div className="flex flex-col gap-4 text-center mt-auto pb-8">
+                                        <div className="w-8 h-px bg-dado-accent mx-auto mb-4"></div>
+                                        <p className="font-serif text-xl italic text-gray-300 leading-relaxed">"{data.scripture}"</p>
+                                        <p className="font-sans text-sm text-gray-400 mt-2">{data.content}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    {data.image && (
+                                        <div className="h-64 sm:h-80 w-full shrink-0 relative z-10">
+                                            <img src={data.image} alt={data.title} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div className={`p-8 sm:p-12 flex flex-col gap-6 relative z-10 ${!data.image ? 'mt-12' : ''}`}>
+                                        <div>
+                                            <span className="font-sans text-xs tracking-widest text-dado-accent uppercase mb-2 block">{data.subtitle}</span>
+                                            <h2 className="font-serif text-4xl text-dado-dark italic leading-tight">{data.title}</h2>
+                                        </div>
+                                        <div className="w-12 h-px bg-dado-accent"></div>
+                                        <p className="font-sans text-lg text-gray-600 leading-relaxed whitespace-pre-line">{data.content}</p>
+                                    </div>
+                                </>
+                            )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        );
+
+        const PopOutItem = ({ item, onClick, delay = 0, theme = 'light' }) => {
+            const isDark = theme === 'dark';
+            
+            const parentVariants = {
+                rest: { 
+                    x: 0, y: 0, scale: 1,
+                    boxShadow: "0px 0px 0px rgba(0,0,0,0)", 
+                    borderColor: isDark ? "rgba(55, 65, 81, 1)" : "rgba(255, 255, 255, 0)",
+                    backgroundColor: isDark ? "#33312e" : "#ffffff" 
+                },
+                hover: { 
+                    x: 10, y: -5, scale: 1,
+                    boxShadow: isDark ? "0 20px 40px -15px rgba(0,0,0,0.5)" : "0 20px 40px -15px rgba(139,125,107,0.3)", 
+                    borderColor: isDark ? "rgba(107, 114, 128, 1)" : "#E8E6E1",
+                    backgroundColor: isDark ? "#33312e" : "#ffffff" 
+                },
+                tap: { scale: 0.98 }
+            };
+
+            const lineVariants = {
+                rest: { width: 4, opacity: isDark ? 0.5 : 0.3 },
+                hover: { width: 8, opacity: 1 }
+            };
+
+            const titleVariants = {
+                rest: { color: isDark ? "#F5F4F0" : "#2A2826" },
+                hover: { color: "#8B7D6B" }
+            };
+
+            const iconContainerVariants = {
+                rest: { backgroundColor: "rgba(0,0,0,0)", borderColor: isDark ? "rgba(75, 85, 99, 1)" : "rgba(229, 231, 235, 1)" },
+                hover: { backgroundColor: isDark ? "#2a2826" : "#F5F4F0", borderColor: isDark ? "rgba(75, 85, 99, 1)" : "rgba(229, 231, 235, 1)" }
+            };
+
+            const iconTextVariants = {
+                rest: { color: "#9ca3af" },
+                hover: { color: "#8B7D6B" }
+            };
+
+            return (
+                <FadeIn delay={delay}>
+                    <motion.div
+                        initial="rest"
+                        whileHover="hover"
+                        whileTap="tap"
+                        variants={parentVariants}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        onClick={() => onClick(item)}
+                        className="relative p-8 md:p-10 cursor-pointer border rounded-2xl flex flex-col md:flex-row gap-8 items-start md:items-center overflow-hidden"
+                    >
+                        <motion.div 
+                            variants={lineVariants}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="absolute left-0 top-0 bottom-0 bg-dado-accent origin-left"
+                        />
+                        
+                        <div className="flex-1 pl-4">
+                            <span className="font-sans text-xs tracking-widest text-gray-400 uppercase mb-2 block">{item.subtitle}</span>
+                            <motion.h3 
+                                variants={titleVariants}
+                                transition={{ duration: 0.2 }}
+                                className="font-serif text-3xl italic"
+                            >
+                                {item.title}
+                            </motion.h3>
+                        </div>
+                        <motion.div 
+                            variants={iconContainerVariants}
+                            transition={{ duration: 0.2 }}
+                            className="w-10 h-10 rounded-full border flex items-center justify-center shrink-0"
+                        >
+                            <motion.span 
+                                variants={iconTextVariants}
+                                transition={{ duration: 0.2 }}
+                            >
+                                →
+                            </motion.span>
+                        </motion.div>
+                    </motion.div>
+                </FadeIn>
+            );
+        };
+
+        const EventCard = ({ item, onClick, delay = 0 }) => {
+            return (
+                <FadeIn delay={delay}>
+                    <motion.div
+                        whileHover="hover"
+                        initial="rest"
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => onClick(item)}
+                        className="group cursor-pointer flex flex-col gap-6"
+                    >
+                        <motion.div 
+                            variants={{
+                                rest: { borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%", filter: "blur(2px) grayscale(40%) sepia(20%)" },
+                                hover: { borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%", filter: "blur(0px) grayscale(0%) sepia(0%)" }
+                            }}
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                            className="w-full aspect-square md:aspect-[4/3] overflow-hidden relative shadow-sm group-hover:shadow-[0_20px_50px_-15px_rgba(139,125,107,0.4)] bg-dado-light/20 mx-auto"
+                        >
+                            <motion.img 
+                                src={item.image} 
+                                alt={item.title} 
+                                variants={{
+                                    rest: { scale: 1.15 },
+                                    hover: { scale: 1 }
+                                }}
+                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                className="w-full h-full object-cover"
+                            />
+                            <motion.div 
+                                variants={{
+                                    rest: { opacity: 0.8, background: "radial-gradient(circle at 20% 30%, rgba(245,244,240,0.6) 0%, rgba(255,255,255,0) 70%)" },
+                                    hover: { opacity: 0, background: "radial-gradient(circle at 80% 70%, rgba(245,244,240,0.4) 0%, rgba(255,255,255,0) 70%)" }
+                                }}
+                                transition={{ duration: 1.5 }}
+                                className="absolute inset-0 mix-blend-overlay pointer-events-none"
+                            ></motion.div>
+                        </motion.div>
+                        <div className="px-4 text-center md:text-left">
+                            <span className="font-sans text-xs tracking-widest text-dado-accent uppercase mb-2 block">{item.subtitle}</span>
+                            <h3 className="font-serif text-2xl italic text-dado-dark group-hover:text-dado-accent transition-colors">{item.title}</h3>
+                        </div>
+                    </motion.div>
+                </FadeIn>
+            );
+        };
+
+        const BulletinCard = ({ item, onClick, delay = 0 }) => {
+            const parts = item.subtitle.split('. ');
+            const month = parts[1] || '11';
+            const day = parts[2] || '15';
+
+            return (
+                <FadeIn delay={delay}>
+                    <motion.div
+                        whileHover={{ x: 10, y: -5 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => onClick(item)}
+                        className="relative p-6 md:p-8 cursor-pointer transition-all duration-500 border border-transparent rounded-2xl hover:border-dado-light hover:shadow-[0_20px_40px_-15px_rgba(139,125,107,0.3)] bg-white group flex items-center gap-8"
+                    >
+                        <div className="w-16 h-20 shrink-0 relative flex flex-col items-center justify-center group-hover:text-dado-accent transition-colors">
+                            <div className="absolute inset-0 border-y border-dado-light group-hover:border-dado-accent transition-colors opacity-50"></div>
+                            <div className="absolute top-2 bottom-2 left-2 right-2 border-x border-dado-light group-hover:border-dado-accent transition-colors opacity-30"></div>
+                            <div className="text-[10px] uppercase font-sans tracking-widest text-gray-400 mb-1 z-10 group-hover:text-dado-accent transition-colors">Nov</div>
+                            <div className="font-serif text-3xl italic text-dado-dark z-10 group-hover:text-dado-accent transition-colors">{day}</div>
+                        </div>
+                        <div className="flex-1">
+                            <span className="font-sans text-xs tracking-widest text-gray-400 uppercase mb-2 block">{item.title}</span>
+                            <h3 className="font-serif text-2xl text-dado-dark italic group-hover:text-dado-accent transition-colors">제 {item.title.split(' ')[1]} {item.title.split(' ')[2]}</h3>
+                        </div>
+                        <div className="w-10 h-10 rounded-full border border-transparent flex items-center justify-center transition-colors shrink-0">
+                            <span className="text-gray-400 group-hover:text-dado-accent opacity-0 group-hover:opacity-100 transition-opacity transform -translate-x-2 group-hover:translate-x-0 duration-300">→</span >
+                        </div>
+                    </motion.div>
+                </FadeIn>
+            );
+        };
+
+        const GalleryCard = ({ item, onClick, isTouchDevice }) => {
+            const ref = useRef(null);
+            const isInView = useInView(ref, { margin: "-40% 0px -40% 0px" });
+            const [isHovered, setIsHovered] = useState(false);
+
+            const isFocused = isTouchDevice ? isInView : isHovered;
+
+            return (
+                <div 
+                    className="masonry-item relative group cursor-pointer" 
+                    ref={ref}
+                    onMouseEnter={() => !isTouchDevice && setIsHovered(true)}
+                    onMouseLeave={() => !isTouchDevice && setIsHovered(false)}
+                    onClick={() => onClick(item)}
+                >
+                    <div className={`relative overflow-hidden bg-dado-light rounded-sm mb-1 ${item.aspect || ''}`}>
+                        {/* 1. 안개(블러) 효과 레이어 */}
+                        <motion.div
+                            animate={{
+                                filter: isFocused ? 'blur(0px) sepia(0) grayscale(0)' : 'blur(2px) sepia(0.3) grayscale(0.15)',
+                                scale: isFocused ? 1 : 1.02
+                            }}
+                            transition={{ duration: 2.0, ease: [0.25, 0.1, 0.25, 1] }}
+                            className="w-full h-full"
+                        >
+                            <img src={item.image} alt={item.title} className="w-full h-full object-cover block" />
+                        </motion.div>
+                        
+                        {/* 2. 새로운 2x3 (6등분) 격자 동기화 레이어 */}
+                        <motion.div 
+                            animate={{ opacity: isFocused ? 0 : 1 }}
+                            transition={{ duration: 2.0, ease: [0.25, 0.1, 0.25, 1] }}
+                            className="absolute inset-0 pointer-events-none"
+                        >
+                            {/* 중앙 세로선 (2분할) */}
+                            <div className="absolute top-0 bottom-0 left-1/2 w-[1px] -translate-x-1/2 bg-white/30 mix-blend-overlay"></div>
+                            {/* 가로선 1 (상단 1/3 지점) */}
+                            <div className="absolute left-0 right-0 top-1/3 h-[1px] -translate-y-1/2 bg-white/30 mix-blend-overlay"></div>
+                            {/* 가로선 2 (상단 2/3 지점) */}
+                            <div className="absolute left-0 right-0 top-2/3 h-[1px] -translate-y-1/2 bg-white/30 mix-blend-overlay"></div>
+                        </motion.div>
+                    </div>
+                    <div className="px-0 pt-1 pb-1">
+                        <span className="font-sans text-[10px] tracking-[0.15em] text-gray-400 uppercase mb-0.5 block">{item.date}</span>
+                        <h3 
+                            className="font-serif text-[1.2rem] font-light leading-none italic transition-colors duration-1000" 
+                            style={{ color: isFocused ? '#8B7D6B' : '#2A2826' }}
+                        >
+                            {item.title}
+                        </h3>
+                    </div>
+                </div>
+            );
+        };
+
+
+        // --- Pages ---
+
+        const Ministries = () => {
+            const [selectedItem, setSelectedItem] = useState(null);
+
+            return (
+                <div className="w-full bg-dado-bg">
+                    <SlideOver isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} data={selectedItem} />
+                    <section className="pt-60 pb-32 px-6 md:px-24">
+                        <FadeIn>
+                            <h1 className="font-serif text-7xl md:text-9xl text-dado-dark mb-6 italic">사역소개</h1>
+                            <p className="font-sans text-xl text-gray-500">환대가 머무는 곳, 성소가 되는 일상</p>
+                        </FadeIn>
+                    </section>
+                    <section className="w-full h-[50vh]">
+                        <ParallaxImage src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Worship" className="w-full h-full" grayscale={true} />
+                    </section>
+                    <section id="주일사역" data-theme="dark" className="py-40 px-6 md:px-24 bg-dado-dark text-dado-bg relative overflow-hidden">
+                        <div className="absolute top-20 left-10 text-[10vw] font-serif italic text-white opacity-[0.03] whitespace-nowrap pointer-events-none select-none">
+                            "신령과 진정으로 예배할지니라"
+                        </div>
+                        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                            <div className="lg:col-span-4">
+                                <FadeIn>
+                                    <h2 className="font-serif text-5xl md:text-6xl text-dado-accent italic mb-6">주일사역</h2>
+                                    <p className="font-sans text-gray-400 leading-relaxed text-lg">
+                                        하나님의 임재를 경험하는 시간.<br/>
+                                        예배의 감격이 온전해지도록 돕는<br/>
+                                        섬김의 자리들입니다.
+                                    </p>
+                                </FadeIn>
+                            </div>
+                            <div className="lg:col-span-8 flex flex-col gap-6">
+                                {ministriesData.sunday.map((item, i) => (
+                                    <PopOutItem key={item.id} item={item} onClick={setSelectedItem} delay={i * 0.1} theme="dark" />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    <section className="w-full h-[50vh]">
+                        <ParallaxImage src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Mission" className="w-full h-full" grayscale={true} />
+                    </section>
+                    <section id="선교 · 봉사" className="py-40 px-6 md:px-24 bg-dado-bg relative overflow-hidden">
+                         <div className="absolute top-20 right-10 text-[10vw] font-serif italic text-dado-dark opacity-[0.03] whitespace-nowrap pointer-events-none select-none text-right">
+                            "너희는 세상의 빛이라"
+                        </div>
+                        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                            <div className="lg:col-span-4">
+                                <FadeIn>
+                                    <h2 className="font-serif text-5xl md:text-6xl text-dado-dark italic mb-6">선교 · 봉사</h2>
+                                    <p className="font-sans text-gray-600 leading-relaxed text-lg">
+                                        교회의 담장을 넘어,<br/>
+                                        이웃과 열방을 향해 사랑을 흘려보내는<br/>
+                                        실천의 여정입니다.
+                                    </p>
+                                </FadeIn>
+                            </div>
+                            <div className="lg:col-span-8 flex flex-col gap-6">
+                                {ministriesData.mission.map((item, i) => (
+                                    <PopOutItem key={item.id} item={item} onClick={setSelectedItem} delay={i * 0.1} theme="light" />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        const News = ({ currentSubTarget }) => {
+            const [activeTab, setActiveTab] = useState('공지사항');
+            const [selectedItem, setSelectedItem] = useState(null);
+
+            useEffect(() => {
+                if (currentSubTarget && ['공지사항', '행사소식', '온라인주보'].includes(currentSubTarget)) {
+                    setActiveTab(currentSubTarget);
+                }
+            }, [currentSubTarget]);
+            
+            const [visibleCounts, setVisibleCounts] = useState({
+                '공지사항': 5,
+                '행사소식': 4,
+                '온라인주보': 5
+            });
+
+            const handleLoadMore = () => {
+                setVisibleCounts(prev => {
+                    const addCount = activeTab === '행사소식' ? 4 : 5;
+                    return { ...prev, [activeTab]: prev[activeTab] + addCount };
+                });
+            };
+
+            const tabs = [
+                { id: '공지사항', label: '공지사항', data: newsData.notices },
+                { id: '행사소식', label: '행사소식', data: newsData.events },
+                { id: '온라인주보', label: '온라인 주보', data: newsData.bulletins }
+            ];
+
+            const tabMeta = {
+                '공지사항': { 
+                    desc: '교회의 새로운 소식과\n다양한 안내를 전해드립니다.', 
+                    watermark: '"좋은 소식을 전하는 자들의 발이여"',
+                    featuredImage: 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' 
+                },
+                '행사소식': { 
+                    desc: '함께 웃고 교제하며\n사랑을 나누는 공동체의 기록입니다.', 
+                    watermark: '"축제와 기쁨의 공동체"',
+                    featuredImage: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' 
+                },
+                '온라인주보': { 
+                    desc: '언제 어디서나 예배의 감격을\n이어가는 주간 순서지입니다.', 
+                    watermark: '"영과 진리로 예배할지니라"',
+                    featuredImage: 'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' 
+                }
+            };
+
+            const currentData = tabs.find(t => t.id === activeTab).data;
+            const currentMeta = tabMeta[activeTab];
+            
+            const visibleData = currentData.slice(0, visibleCounts[activeTab]);
+            const hasMore = currentData.length > visibleCounts[activeTab];
+
+            return (
+                <div className="w-full bg-dado-bg min-h-screen pb-32">
+                    <SlideOver isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} data={selectedItem} />
+                    
+                    <section className="pt-60 pb-20 px-6 md:px-24 relative z-10">
+                        <FadeIn>
+                            <h1 className="font-serif text-7xl md:text-9xl text-dado-dark mb-6 italic">교회소식</h1>
+                            <p className="font-sans text-xl text-gray-500">안양예담교회의 따뜻한 소식과 일상을 나눕니다</p>
+                        </FadeIn>
+                    </section>
+
+                    <section className="px-6 md:px-24 mb-16 relative z-10">
+                        <div className="max-w-screen-2xl mx-auto border-b border-dado-light flex gap-8 md:gap-12 overflow-x-auto no-scrollbar">
+                            {tabs.map((tab) => (
+                                <button 
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className="relative pb-6 text-lg md:text-xl font-serif italic whitespace-nowrap transition-colors duration-300"
+                                    style={{ color: activeTab === tab.id ? '#2A2826' : '#9ca3af' }}
+                                >
+                                    {tab.label}
+                                    {activeTab === tab.id && (
+                                        <motion.div 
+                                            layoutId="newsTab" 
+                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-dado-accent"
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="px-6 md:px-24 relative min-h-[60vh]">
+                        <AnimatePresence mode="wait">
+                            <motion.div 
+                                key={activeTab}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 0.03, x: 0 }}
+                                exit={{ opacity: 0, x: -50 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                className="absolute top-0 right-10 text-[7vw] font-serif italic text-dado-dark whitespace-nowrap pointer-events-none select-none text-right overflow-hidden"
+                            >
+                                {currentMeta.watermark}
+                            </motion.div>
+                        </AnimatePresence>
+
+                        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 relative z-10">
+                            <div className="lg:col-span-4 mt-12 md:mt-24">
+                                <div className="sticky top-40 flex flex-col gap-12">
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            key={activeTab + "-text"}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.4 }}
+                                        >
+                                            <h2 className="font-serif text-4xl md:text-5xl text-dado-dark italic mb-6">
+                                                {tabs.find(t => t.id === activeTab).label}
+                                            </h2>
+                                            <p className="font-sans text-gray-500 leading-relaxed text-lg whitespace-pre-line">
+                                                {currentMeta.desc}
+                                            </p>
+                                        </motion.div>
+                                    </AnimatePresence>
+
+                                    <AnimatePresence mode="wait">
+                                        {currentMeta.featuredImage && (
+                                            <motion.div
+                                                key={activeTab + "-img"}
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 1.2, ease: "easeOut" }}
+                                                className="hidden lg:block w-full aspect-[3/4] relative overflow-hidden"
+                                            >
+                                                {activeTab === '공지사항' && (
+                                                    <motion.div 
+                                                        initial={{ filter: 'blur(20px)', scale: 0.95 }}
+                                                        animate={{ filter: 'blur(4px)', scale: 1 }}
+                                                        transition={{ duration: 2, ease: "easeOut" }}
+                                                        className="w-full h-full relative mix-blend-multiply"
+                                                        style={{ WebkitMaskImage: 'radial-gradient(circle at 50% 50%, black 10%, transparent 65%)', maskImage: 'radial-gradient(circle at 50% 50%, black 10%, transparent 65%)' }}
+                                                    >
+                                                        <img src={currentMeta.featuredImage} className="w-full h-full object-cover grayscale opacity-70 sepia-[0.3]" />
+                                                    </motion.div>
+                                                )}
+                                                {activeTab === '행사소식' && (
+                                                    <motion.div 
+                                                        initial={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%", rotate: -5, filter: 'blur(10px)' }}
+                                                        animate={{ borderRadius: ["60% 40% 30% 70% / 60% 30% 70% 40%", "40% 60% 70% 30% / 50% 60% 30% 60%", "60% 40% 30% 70% / 60% 30% 70% 40%"], rotate: 0, filter: 'blur(2px)' }}
+                                                        transition={{ borderRadius: { duration: 10, repeat: Infinity, ease: "easeInOut" }, filter: { duration: 2 }, rotate: { duration: 2, ease: "easeOut" } }}
+                                                        className="w-[90%] h-[90%] absolute top-[5%] left-[5%] relative mix-blend-multiply overflow-hidden"
+                                                    >
+                                                        <img src={currentMeta.featuredImage} className="w-[120%] h-[120%] absolute -top-[10%] -left-[10%] object-cover grayscale opacity-50 sepia-[0.2]" />
+                                                    </motion.div>
+                                                )}
+                                                {activeTab === '온라인주보' && (
+                                                    <motion.div 
+                                                        initial={{ filter: 'blur(10px)', y: 20 }}
+                                                        animate={{ filter: 'blur(0px)', y: 0 }}
+                                                        transition={{ duration: 1.5, ease: "easeOut" }}
+                                                        className="w-full h-full relative mix-blend-multiply"
+                                                        style={{ WebkitMaskImage: 'linear-gradient(to right, black 5%, transparent 6%, black 8%, black 35%, transparent 36%, black 38%, black 65%, transparent 67%, black 70%, black 95%, transparent 100%)', maskImage: 'linear-gradient(to right, black 5%, transparent 6%, black 8%, black 35%, transparent 36%, black 38%, black 65%, transparent 67%, black 70%, black 95%, transparent 100%)' }}
+                                                    >
+                                                        <img src={currentMeta.featuredImage} className="w-full h-full object-cover grayscale opacity-60" />
+                                                    </motion.div>
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
+
+                            <div className="lg:col-span-8">
+                                <AnimatePresence mode="wait">
+                                    <motion.div 
+                                        key={activeTab}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.3 }}
+                                        className={activeTab === '행사소식' ? "grid grid-cols-1 md:grid-cols-2 gap-10" : "flex flex-col gap-6 md:gap-8"}
+                                    >
+                                        {visibleData.length > 0 ? visibleData.map((item, i) => {
+                                            if (activeTab === '행사소식') {
+                                                return <EventCard key={item.id} item={item} onClick={setSelectedItem} delay={i * 0.1} />;
+                                            } else if (activeTab === '온라인주보') {
+                                                return <BulletinCard key={item.id} item={item} onClick={setSelectedItem} delay={i * 0.05} />;
+                                            } else {
+                                                return <PopOutItem key={item.id} item={item} onClick={setSelectedItem} delay={i * 0.05} theme="light" />;
+                                            }
+                                        }) : (
+                                            <div className="py-20 text-center font-sans text-gray-400 border border-dashed border-gray-300 md:col-span-2">
+                                                등록된 소식이 없습니다.
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </AnimatePresence>
+
+                                {hasMore && (
+                                    <FadeIn delay={0.1}>
+                                        <div className="flex justify-center mt-16 pb-8">
+                                            <button 
+                                                onClick={handleLoadMore}
+                                                className="group flex items-center gap-4 px-8 py-4 bg-white border border-dado-light rounded-full hover:border-dado-accent hover:shadow-[0_10px_30px_-10px_rgba(139,125,107,0.3)] transition-all duration-300"
+                                            >
+                                                <span className="font-serif text-lg italic text-dado-dark group-hover:text-dado-accent transition-colors">과거의 소식 마주하기</span>
+                                                <span className="w-8 h-8 rounded-full bg-dado-bg flex items-center justify-center text-dado-dark group-hover:bg-dado-accent group-hover:text-white transition-colors">↓</span>
+                                            </button>
+                                        </div>
+                                    </FadeIn>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        const Gallery = () => {
+            const [selectedItem, setSelectedItem] = useState(null);
+            const [activeYear, setActiveYear] = useState(2026);
+            const years = [2026, 2025, 2024];
+
+            const [isTouchDevice, setIsTouchDevice] = useState(false);
+            useEffect(() => {
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    setIsTouchDevice(true);
+                }
+            }, []);
+
+            const filteredData = galleryData.filter(item => item.year === activeYear);
+
+            return (
+                <div className="w-full bg-dado-bg min-h-screen pb-32">
+                    <SlideOver isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} data={selectedItem} />
+
+                    <div className="max-w-screen-2xl mx-auto px-6 md:px-24 pt-60">
+                        <div className="w-full mb-20 lg:mb-32">
+                            <FadeIn>
+                                <h1 className="font-serif text-7xl lg:text-[8rem] text-dado-dark mb-4 italic whitespace-nowrap" style={{ letterSpacing: '0.15em' }}>갤러리</h1>
+                                <p className="font-sans text-gray-500 font-light tracking-[0.2em]">안양예담교회가 걸어온 빛나는 흔적들</p>
+                            </FadeIn>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 relative">
+                            <div className="lg:col-span-4">
+                                <div className="sticky top-40 flex flex-col z-20">
+                                    <FadeIn delay={0.2}>
+                                        <div className="flex flex-col gap-6 mb-16 border-b border-dado-light pb-12 lg:border-none lg:pb-0">
+                                            {years.map(year => (
+                                                <div key={year} className="flex items-center gap-4">
+                                                    <button
+                                                        onClick={() => setActiveYear(year)}
+                                                        className={`font-serif text-4xl transition-all duration-500 ${activeYear === year ? 'text-dado-dark italic' : 'text-gray-300 hover:text-gray-400'}`}
+                                                    >
+                                                        {year}
+                                                    </button>
+                                                    {activeYear === year && (
+                                                        <motion.span 
+                                                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} 
+                                                            className="font-sans text-[10px] font-bold tracking-[0.3em] text-dado-accent uppercase"
+                                                        >
+                                                            — Archive
+                                                        </motion.span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </FadeIn>
+
+                                    <FadeIn delay={0.4}>
+                                        <motion.div
+                                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5 }}
+                                            className="hidden lg:block w-48 h-64 mix-blend-multiply overflow-hidden ml-4"
+                                            style={{ 
+                                                WebkitMaskImage: 'linear-gradient(to bottom, black 30%, transparent 100%)', 
+                                                maskImage: 'linear-gradient(to bottom, black 30%, transparent 100%)' 
+                                            }}
+                                        >
+                                            <img 
+                                                src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                                                className="w-full h-full object-cover grayscale opacity-40 blur-md scale-110" 
+                                                alt="ethereal object" 
+                                            />
+                                        </motion.div>
+                                    </FadeIn>
+                                </div>
+                            </div>
+
+                            <div className="lg:col-span-8 relative z-10">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeYear}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="masonry-grid"
+                                    >
+                                        {filteredData.length > 0 ? filteredData.map((item) => (
+                                            <GalleryCard 
+                                                key={item.id} 
+                                                item={item} 
+                                                onClick={setSelectedItem} 
+                                                isTouchDevice={isTouchDevice} 
+                                            />
+                                        )) : (
+                                            <div className="py-20 text-center font-sans text-gray-400 border border-dashed border-gray-300">
+                                                해당 연도의 기록이 없습니다.
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Home = () => (
+            <div className="w-full pb-32">
+                <section data-theme="dark" className="relative min-h-screen w-full overflow-hidden bg-dado-dark flex flex-col">
+                    <div className="absolute inset-0 bg-black/40 z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1437603568260-1950d3ca6eab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" className="w-full flex-1 object-cover" />
+                    <div className="relative z-20 w-full text-center px-6 py-20 md:py-24 flex flex-col justify-center items-center">
+                        <FadeIn delay={0.2}><h2 className="text-dado-bg font-sans tracking-[0.2em] text-sm uppercase mb-6">환대에서 성소로</h2></FadeIn>
+                        <FadeIn delay={0.4}><h1 className="text-dado-bg font-serif text-6xl md:text-8xl lg:text-9xl leading-[1.1] italic">GRACE<br/>FOLLOWS<br/>FAITH</h1></FadeIn>
+                    </div>
+                </section>
+
+                <section className="py-48 px-6 md:px-24 max-w-screen-2xl mx-auto">
+                    <FadeIn><h3 className="font-sans text-sm uppercase tracking-[0.2em] text-dado-accent mb-8 text-dado-accent font-bold">About Us</h3></FadeIn>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                        <FadeIn delay={0.2} className="md:col-span-8 lg:col-span-9">
+                            <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.1] text-dado-dark">
+                                예배의 감격이 일상이 되고,<br/>공동체의 따뜻함이 세상으로<br/>흘러가는 공간을 만듭니다.
+                            </h2>
+                        </FadeIn>
+                    </div>
+                </section>
+                
+                <section data-theme="dark" className="py-12 w-full"><FadeIn><div className="w-full h-[70vh] image-container"><img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" className="w-full h-full object-cover" /></div></FadeIn></section>
+
+                <section className="py-32 px-6 md:px-24 max-w-screen-2xl mx-auto border-b border-dado-light pb-48">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
+                        <FadeIn><div className="image-container h-[70vh] mb-6"><img src="https://images.unsplash.com/photo-1511649475669-e288648b2339?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" className="w-full h-full object-cover"/></div><h3 className="font-serif text-3xl mb-2 text-dado-dark italic">주일 예배</h3></FadeIn>
+                        <FadeIn delay={0.2} className="md:mt-32"><div className="image-container h-[70vh] mb-6"><img src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" className="w-full h-full object-cover"/></div><h3 className="font-serif text-3xl mb-2 text-dado-dark italic">선교와 봉사</h3></FadeIn>
+                    </div>
+                </section>
+
+                <PrayerAssistant />
+
+                <section className="py-48 px-6 md:px-24 bg-dado-bg">
+                    <div className="max-w-screen-2xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+                            <FadeIn>
+                                <h3 className="font-sans text-sm uppercase tracking-[0.2em] text-dado-accent mb-8 font-bold">Location</h3>
+                                <h2 className="font-serif text-5xl md:text-6xl text-dado-dark mb-12 italic">찾아오시는 길</h2>
+                                <div className="space-y-6 font-sans text-lg text-gray-600 leading-relaxed">
+                                    <p className="border-b border-dado-light pb-4">
+                                        <span className="block text-xs uppercase text-dado-accent tracking-widest mb-1">Address</span>
+                                        경기도 안양시 동안구 관악대로 335 5층
+                                    </p>
+                                    <p className="border-b border-dado-light pb-4">
+                                        <span className="block text-xs uppercase text-dado-accent tracking-widest mb-1">Contact</span>
+                                        031-425-9211 / yongsuk9211@daum.net
+                                    </p>
+                                    <p className="pt-6 text-sm text-gray-400">
+                                        관악대로 대로변에 위치하고 있으며, 관양중학교 정류장에서 도보 1분 거리입니다. 언제든 편안한 마음으로 방문해 주세요.
+                                    </p>
+                                </div>
+                            </FadeIn>
+                            <FadeIn delay={0.2}>
+                                <div className="image-container aspect-[4/3] shadow-2xl bg-dado-light/30">
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                                        alt="안양예담교회 오시는 길 약도" 
+                                        className="w-full h-full object-cover transition-all duration-1000" 
+                                    />
+                                </div>
+                            </FadeIn>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        );
+
+        const About = () => (
+            <div className="w-full bg-dado-bg">
+                <section className="pt-60 pb-32 px-6 md:px-24"><FadeIn><h1 className="font-serif text-7xl md:text-9xl text-dado-dark mb-12 italic">교회소개</h1></FadeIn></section>
+                
+                <section id="인사말" className="py-32 px-6 md:px-24 grid grid-cols-1 md:grid-cols-12 gap-16 border-t border-dado-light">
+                    <div className="md:col-span-5 h-[60vh]">
+                        <ParallaxImage 
+                            src="Senior_pastor.jpg" 
+                            alt="Pastor" 
+                            className="h-full"
+                            grayscale={true}
+                        />
+                    </div>
+                    <div className="md:col-span-7 flex flex-col justify-center">
+                        <FadeIn>
+                            <span className="font-sans text-dado-accent text-sm tracking-widest uppercase mb-4 block">SHALOM</span>
+                            <h2 className="font-serif text-4xl md:text-5xl mb-8 text-dado-dark">
+                                한 영혼을 위해,<br/>
+                                예배의 자리를 지킵니다.
+                            </h2>
+                            <p className="font-sans text-lg text-gray-600 leading-relaxed italic">— 안양예담교회 담임목사 손영숙</p>
+                        </FadeIn>
+                    </div>
+                </section>
+
+                <section id="비전 · 핵심가치" data-theme="dark" className="py-48 px-6 md:px-24 bg-dado-dark text-dado-bg">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+                        {["말씀의 치유", "기도의 회복", "예배의 자리"].map((v, i) => (
+                            <FadeIn key={i} delay={i*0.2}><div className="border-l border-dado-accent pl-8 py-4"><h3 className="font-serif text-3xl mb-4 italic">{v}</h3></div></FadeIn>
+                        ))}
+                    </div>
+                </section>
+
+                <section id="섬기는 이들" className="py-48 px-6 md:px-24 max-w-screen-2xl mx-auto">
+                    <FadeIn className="mb-24"><h2 className="font-serif text-5xl md:text-7xl text-dado-dark italic">섬기는 이들</h2></FadeIn>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        {[
+                            {r:"담임목사", n:"손영숙", img: "Senior_pastor.jpg"}, 
+                            {r:"강도사", n:"김재희", img: "1472099645785-5658abf4ff4e"}, 
+                            {r:"전도사", n:"손희원", img: "1573496359142-b8d87734a5a2"}
+                        ].map((p, i) => (
+                            <FadeIn key={i} delay={i*0.1}>
+                                <div className="group cursor-pointer">
+                                    <ParallaxImage 
+                                        src={p.img.includes('.') ? p.img : `https://images.unsplash.com/photo-${p.img}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                                        alt={p.n}
+                                        className="aspect-[3/4] mb-6"
+                                        grayscale={true}
+                                    />
+                                    <p className="font-sans text-xs tracking-widest text-dado-accent uppercase mb-1">{p.r}</p>
+                                    <h4 className="font-serif text-2xl text-dado-dark italic">{p.n}</h4>
+                                </div>
+                            </FadeIn>
+                        ))}
+                    </div>
+                </section>
+            </div>
+        );
+
+        const PagePlaceholder = ({ title }) => (
+            <div className="min-h-screen pt-40 px-6 md:px-24 flex flex-col items-center justify-center text-center bg-white">
+                <FadeIn><h1 className="font-serif text-6xl md:text-8xl text-dado-dark mb-6 italic">{title}</h1><p className="font-sans text-gray-500">준비 중입니다.</p></FadeIn>
+            </div>
+        );
+
+        // --- NEW: Contact Component (1, 2, 3번 구역 레이아웃 및 유리 서판 인터랙션 적용) ---
+        const Contact = () => {
+            const [form, setForm] = useState({ name: '', message: '' });
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [focusedField, setFocusedField] = useState(null);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setIsSubmitted(true);
+                // 3.5초 후 화이트아웃 애니메이션 종료 및 폼 초기화
+                setTimeout(() => {
+                    setForm({ name: '', message: '' });
+                    setIsSubmitted(false);
+                    setFocusedField(null);
+                }, 3500);
+            };
+
+            const isFocused = focusedField !== null;
+
+            return (
+                <div className="w-full bg-dado-bg min-h-screen pb-32 relative overflow-hidden">
+                    
+                    {/* 화이트아웃(White-out) 잔상 연출 (전송 시 화면 전체를 하얗게 채움) */}
+                    <AnimatePresence>
+                        {isSubmitted && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1.5, ease: "easeInOut" }}
+                                className="fixed inset-0 z-[9999] bg-white flex items-center justify-center pointer-events-none"
+                            >
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                    transition={{ delay: 1, duration: 2, ease: "easeOut" }}
+                                    className="font-serif text-dado-accent text-2xl md:text-3xl italic tracking-widest mix-blend-multiply"
+                                >
+                                    당신의 마음이 빛 속에 안전하게 보관되었습니다
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <div className="max-w-screen-2xl mx-auto px-6 md:px-24 pt-40 md:pt-52 relative z-10">
+                        
+                        {/* 1번 구역: 상단 타이틀 레이아웃 유지 */}
+                        <FadeIn>
+                            <h1 className="font-serif text-7xl lg:text-9xl text-dado-dark mb-4 italic tracking-widest pb-12 border-b border-dado-light">
+                                문의하기
+                            </h1>
+                        </FadeIn>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 pt-16 items-start relative">
+                            
+                            {/* 2번 구역 (4칸): 좌측 레이아웃 */}
+                            <div className="lg:col-span-4 relative">
+                                {/* h-[calc(100vh-250px)]와 flex-col justify-between으로 D구역 하단 안착 */}
+                                <div className="sticky top-40 flex flex-col justify-between h-auto min-h-[500px] lg:h-[calc(100vh-250px)] pb-10">
+                                    <FadeIn delay={0.2}>
+                                        <div className="max-w-sm">
+                                            <p className="font-serif text-3xl md:text-4xl text-dado-dark leading-snug italic">
+                                                "이곳은 당신의 이름이 없어도<br/>안전한 곳입니다."
+                                            </p>
+                                        </div>
+                                    </FadeIn>
+                                    
+                                    {/* 2번 하단 구역 (C에서 D로 이동된 Inquiry 정보) */}
+                                    <div className="mt-20 lg:mt-auto">
+                                        <FadeIn delay={0.3}>
+                                            <span className="block text-[10px] font-sans tracking-[0.3em] text-dado-accent uppercase mb-6">Inquiry Information</span>
+                                            <div className="font-sans text-sm text-gray-500 space-y-3 font-medium tracking-wider">
+                                                <p>031-425-9211</p>
+                                                <p>yongsuk9211@daum.net</p>
+                                                <p>경기 안양시 동안구 관악대로 335 5층</p>
+                                            </div>
+                                        </FadeIn>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3번 구역 (8칸): 우측 다크 프레임 */}
+                            <div className="lg:col-span-8 relative">
+                                <FadeIn delay={0.4}>
+                                    {/* A, B 여백을 채우는 다크 프레임 (푸터와 동일한 dado-dark) */}
+                                    <div className="w-full bg-dado-dark relative shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] rounded-sm min-h-[700px] lg:min-h-[850px] flex flex-col items-center justify-center overflow-hidden">
+                                        
+                                        {/* 싱그러운 푸른 초장 이미지 (위아래 여백을 주어 A,B 다크 프레임 노출) */}
+                                        <div className="absolute top-16 bottom-16 left-6 right-6 lg:top-24 lg:bottom-24 lg:left-12 lg:right-12 overflow-hidden rounded-sm bg-black/20 z-0">
+                                            <motion.img 
+                                                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
+                                                alt="Fresh Green Meadow"
+                                                className="w-full h-full object-cover"
+                                                animate={{ 
+                                                    // 포커스 시 맑고 싱그러운 초록빛으로 선명해짐
+                                                    filter: isFocused ? 'blur(0px) brightness(1.0) saturate(1.2)' : 'blur(12px) brightness(0.7) saturate(0.9)',
+                                                    scale: isFocused ? 1 : 1.05
+                                                }}
+                                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none mix-blend-multiply"></div>
+                                        </div>
+
+                                        {/* 투명한 두 개의 서판 */}
+                                        <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-[85%] md:max-w-[70%] lg:max-w-md flex flex-col gap-6">
+                                            
+                                            {/* 성함 패널 */}
+                                            <motion.div 
+                                                className="w-full rounded-2xl border border-white/20 p-6 md:p-8 flex flex-col gap-2 transition-all duration-700"
+                                                animate={{ 
+                                                    backgroundColor: focusedField === 'name' ? 'rgba(255,255,255,0.02)' : (isFocused ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)'),
+                                                    backdropFilter: focusedField === 'name' ? 'blur(0px)' : (isFocused ? 'blur(12px)' : 'blur(6px)')
+                                                }}
+                                            >
+                                                <label className="text-white text-sm tracking-widest font-serif italic mb-2 opacity-80">
+                                                    성함 (선택사항)
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="익명의 성도"
+                                                    onFocus={() => setFocusedField('name')}
+                                                    onBlur={() => setFocusedField(null)}
+                                                    className="w-full bg-transparent text-white text-2xl outline-none placeholder-white/40 font-serif"
+                                                    value={form.name}
+                                                    onChange={(e) => setForm({...form, name: e.target.value})}
+                                                />
+                                            </motion.div>
+
+                                            {/* 내용 패널 */}
+                                            <motion.div 
+                                                className="w-full rounded-2xl border border-white/20 p-6 md:p-8 flex flex-col gap-2 transition-all duration-700 relative"
+                                                animate={{ 
+                                                    backgroundColor: focusedField === 'message' ? 'rgba(255,255,255,0.02)' : (isFocused ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)'),
+                                                    backdropFilter: focusedField === 'message' ? 'blur(0px)' : (isFocused ? 'blur(12px)' : 'blur(6px)')
+                                                }}
+                                            >
+                                                <label className="text-white text-sm tracking-widest font-serif italic mb-2 opacity-80">
+                                                    당신의 마음
+                                                </label>
+                                                <textarea 
+                                                    rows="5"
+                                                    required
+                                                    placeholder="침묵 속의 고백..."
+                                                    onFocus={() => setFocusedField('message')}
+                                                    onBlur={() => setFocusedField(null)}
+                                                    className="w-full bg-transparent text-white text-2xl md:text-3xl leading-relaxed outline-none placeholder-white/40 font-serif resize-none min-h-[150px] md:min-h-[200px]"
+                                                    value={form.message}
+                                                    onChange={(e) => setForm({...form, message: e.target.value})}
+                                                ></textarea>
+
+                                                {/* 플로팅 고스트 서클 (전송 버튼) */}
+                                                <div className="absolute bottom-6 right-6 z-20">
+                                                    <button type="submit" className="relative w-16 h-16 md:w-20 md:h-20 rounded-full border border-white/40 flex flex-col items-center justify-center backdrop-blur-md overflow-hidden group transition-all duration-500 hover:border-white focus:outline-none">
+                                                        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-500"></div>
+                                                        <div className="flex flex-col items-center justify-center gap-1.5 z-10 transition-transform duration-500 group-hover:scale-110">
+                                                            <div className="w-4 md:w-5 h-[1px] bg-white transition-all duration-500 group-hover:w-6 md:group-hover:w-8"></div>
+                                                            <span className="font-sans text-[8px] md:text-[9px] tracking-[0.2em] text-white font-light ml-[0.2em]">SEND</span>
+                                                            <div className="w-4 md:w-5 h-[1px] bg-white transition-all duration-500 group-hover:w-6 md:group-hover:w-8"></div>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                            
+                                        </form>
+                                    </div>
+                                </FadeIn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const OverlayMenu = ({ isOpen, toggleMenu, handleNavigation }) => {
+            const [activeMenu, setActiveMenu] = useState(null);
+            const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+            useEffect(() => {
+                const check = () => setIsMobile(window.innerWidth < 768);
+                window.addEventListener('resize', check);
+                return () => window.removeEventListener('resize', check);
+            }, []);
+
+            return (
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-dado-dark text-dado-bg z-[100] flex flex-col justify-center px-10 md:px-24">
+                            <button onClick={toggleMenu} className="absolute top-10 right-10 text-sm tracking-widest font-sans uppercase hover-trigger z-50">Close ✕</button>
+                            <div className="flex flex-col md:flex-row justify-between w-full max-w-7xl mx-auto mt-20 md:mt-0">
+                                <div className="relative">
+                                    <motion.div animate={{ x: isMobile && activeMenu ? '-100%' : 0, opacity: isMobile && activeMenu ? 0 : 1 }} className="flex flex-col gap-6 md:gap-10">
+                                        {menuItems.map((item, index) => (
+                                            <div key={item.id} className="relative w-max" onMouseEnter={() => !isMobile && setActiveMenu(item.id)} onMouseLeave={() => !isMobile && setActiveMenu(null)} onClick={() => isMobile ? setActiveMenu(item.id) : handleNavigation(item.id)}>
+                                                <div className="flex items-center gap-4 cursor-pointer">
+                                                    <span className={`text-4xl md:text-7xl font-serif transition-colors ${activeMenu === item.id && !isMobile ? 'text-dado-accent' : 'text-white'}`}>{item.label}</span>
+                                                    {!isMobile && activeMenu === item.id && <span className="text-4xl text-dado-accent">→</span >}
+                                                </div>
+                                                {!isMobile && activeMenu === item.id && (
+                                                    <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} className={`absolute left-full top-0 pt-4 pl-10 min-w-[350px]`}>
+                                                        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                                                            {item.sub.map((s, si) => <button key={si} onClick={(e) => {e.stopPropagation(); handleNavigation(item.id, s);}} className="text-left text-lg font-sans text-gray-400 hover:text-white transition-colors">{s}</button>)}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                    <AnimatePresence>
+                                        {isMobile && activeMenu && (
+                                            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="absolute inset-0 bg-dado-dark z-10 flex flex-col">
+                                                <button onClick={() => setActiveMenu(null)} className="text-xs font-sans text-gray-400 mb-8 uppercase tracking-widest">← Back</button>
+                                                <h3 className="text-4xl font-serif text-dado-accent mb-6">{menuItems.find(m => m.id === activeMenu).label}</h3>
+                                                <div className="flex flex-col gap-6 border-t border-gray-700 pt-8">
+                                                    {menuItems.find(m => m.id === activeMenu).sub.map((s, si) => <button key={si} className="text-left text-2xl font-sans" onClick={() => handleNavigation(activeMenu, s)}>{s}</button>)}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                                <div className="flex flex-col justify-end text-sm text-gray-400 space-y-4 md:mt-0 mt-12">
+                                    <div><p className="text-white mb-2 font-medium">예배 안내</p><p>주일 1부 - 10:30 AM / 2부 - 13:00 PM</p></div>
+                                    <div className="pt-8"><p>경기도 안양시 동안구 관악대로 335 5층</p><p>031-425-9211 / yongsuk9211@daum.net</p></div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            );
+        };
+
+        const App = () => {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [currentPage, setCurrentPage] = useState('home');
+            const [currentSubTarget, setCurrentSubTarget] = useState(null); 
+            const [isTransitioning, setIsTransitioning] = useState(false);
+            const [isHeaderLight, setIsHeaderLight] = useState(true);
+            const { scrollY } = useScroll();
+
+            useEffect(() => {
+                const checkHeaderColor = () => {
+                    const headerHeight = 80;
+                    const elements = document.querySelectorAll('[data-theme="dark"]');
+                    let isDark = false;
+                    elements.forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= headerHeight / 2 && rect.bottom >= headerHeight / 2) {
+                            isDark = true;
+                        }
+                    });
+                    setIsHeaderLight(isDark);
+                };
+                window.addEventListener('scroll', checkHeaderColor, { passive: true });
+                window.addEventListener('resize', checkHeaderColor);
+                checkHeaderColor();
+                return () => {
+                    window.removeEventListener('scroll', checkHeaderColor);
+                    window.removeEventListener('resize', checkHeaderColor);
+                };
+            }, [currentPage]);
+
+            const handleNavigation = (target, subTarget = null) => {
+                if (isTransitioning) return;
+                setIsTransitioning(true);
+                setCurrentSubTarget(subTarget); 
+
+                setTimeout(() => {
+                    setCurrentPage(target);
+                    setIsMenuOpen(false);
+                    window.scrollTo(0, 0);
+                    setTimeout(() => {
+                        setIsTransitioning(false);
+                        if (subTarget && target !== 'news') {
+                            const el = document.getElementById(subTarget);
+                            if (el) {
+                                const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                                window.scrollTo({ top: y, behavior: 'smooth' });
+                            }
+                        }
+                    }, 100);
+                }, 1500); 
+            };
+
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'home': return <Home />;
+                    case 'about': return <About />;
+                    case 'ministries': return <Ministries />;
+                    case 'news': return <News currentSubTarget={currentSubTarget} />; 
+                    case 'gallery': return <Gallery />; 
+                    case 'contact': return <Contact />;
+                    default: return <Home />;
+                }
+            };
+
+            const grainData = "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E";
+
+            return (
+                <div className="relative font-sans antialiased text-dado-dark">
+                    <div className="pointer-events-none fixed inset-0 z-[150] opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: `url("${grainData}")` }}></div>
+                    
+                    <CustomCursor />
+                    <AnimatePresence>
+                        {isTransitioning && (
+                            <motion.div className="fixed inset-0 z-[120] flex items-center justify-center bg-dado-dark pointer-events-none" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.5, ease: "easeInOut" }}>
+                                <motion.div className="text-dado-bg font-serif text-3xl tracking-[0.3em]" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 1.5, ease: "easeInOut" }}>안양예담교회</motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <header className={`fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-6 flex justify-between items-center transition-colors duration-300 ${(isHeaderLight || isMenuOpen) ? 'text-dado-bg' : 'text-dado-dark'}`}>
+                        <div onClick={() => handleNavigation('home')} className="text-2xl font-serif tracking-widest cursor-pointer hover-trigger">안양예담교회</div>
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="hover-trigger font-sans text-sm uppercase flex items-center gap-2">
+                            <span className="hidden md:inline">{isMenuOpen ? 'Close' : 'Menu'}</span>
+                            <div className="flex flex-col gap-1.5 w-6">
+                                <span className={`h-px w-full bg-current transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                                <span className={`h-px w-full bg-current ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+                                <span className={`h-px w-full bg-current transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                            </div>
+                        </button>
+                    </header>
+
+                    <OverlayMenu isOpen={isMenuOpen} toggleMenu={() => setIsMenuOpen(!isMenuOpen)} handleNavigation={handleNavigation} />
+                    <main><motion.div key={currentPage} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, delay: 0.2 }}>{renderPage()}</motion.div></main>
+                    
+                    <footer data-theme="dark" className="bg-dado-dark text-dado-light py-24 px-6 md:px-24">
+                        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+                            <div className="md:col-span-2">
+                                <h2 className="font-serif text-4xl mb-6 italic">예배에서 회복으로,</h2>
+                                <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
+                                    말씀과 기도로 한 영혼을 품고,<br/>
+                                    하나님 앞에 다시 세워가는 안양예닮교회입니다.
+                                </p>
+                            </div>
+                            <div><h4 className="text-white font-medium mb-6">Sitemap</h4><div className="flex flex-col gap-3 text-sm text-gray-400">{menuItems.map(m => <button key={m.id} onClick={() => handleNavigation(m.id)} className="text-left hover:text-white transition-colors">{m.label}</button>)}</div></div>
+                            <div><h4 className="text-white font-medium mb-6">Contact</h4><div className="text-sm text-gray-400 space-y-2"><p className="whitespace-nowrap">경기 안양시 동안구 관악대로 335 5층</p><p>031-425-9211</p></div></div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

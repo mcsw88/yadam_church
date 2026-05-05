@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
+@theme {
+  --color-dado-bg: #f5f4f0;
+  --color-dado-dark: #2a2826;
+  --color-dado-accent: #8b7d6b;
+  --color-dado-light: #e8e6e1;
+
+  --font-serif:
+    var(--font-cormorant), var(--font-noto-serif-kr), "Cormorant Garamond",
+    "Noto Serif KR", serif;
+  --font-sans: var(--font-pretendard), "Pretendard", "Noto Sans KR", sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --z-grain: 1;
+  --z-base: 10;
+  --z-header: 20;
+  --z-custom-cursor: 10001;
+  --z-overlay: 100;
+  --z-menu: 120;
+  --z-modal: 150;
+  --z-transition: 200;
+  --z-toast: 9999;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --duration-fade: 1000ms;
+  --duration-transition: 600ms;
+  --duration-page-transition: 1500ms;
+  --duration-card-morph: 1500ms;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-dado-bg);
+  color: var(--color-dado-dark);
+  font-family: var(--font-sans);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+}
+
+.allow-text-select,
+.selectable-text {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+::selection {
+  background-color: var(--color-dado-accent);
+  color: var(--color-dado-bg);
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+.masonry-grid {
+  column-count: 1;
+  column-gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+/*@media (min-width: 1024px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}*/
+
+.masonry-grid > * {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  display: block;
+  width: 100%;
+}
+
+body.custom-cursor-active,
+body.custom-cursor-active * {
+  cursor: none !important;
+}
+/*
+body.custom-cursor-active.overlay-menu-open,
+body.custom-cursor-active.overlay-menu-open * {
+  cursor: auto;
+}*/

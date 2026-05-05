@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "안양예담교회" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - button "메뉴 열기" [ref=e5]:
+        - generic [ref=e6]: MENU
+  - main [ref=e11]:
+    - generic [ref=e13]:
+      - heading "갤러리" [level=1] [ref=e14]
+      - paragraph [ref=e15]: 안양예담교회가 걸어온 빛나는 흔적들
+    - generic [ref=e17]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - button "2026" [ref=e23]
+          - generic [ref=e24]: — Archive
+        - button "2025" [ref=e26]
+        - button "2024" [ref=e28]
+      - generic [ref=e30]:
+        - button "가을 음악회 \"성소에 울리는 찬양\" 상세 보기" [ref=e31] [cursor=pointer]:
+          - img "가을 음악회 \"성소에 울리는 찬양\"" [ref=e34]
+          - generic [ref=e35]:
+            - generic [ref=e36]: 2026. 10. 25
+            - heading "가을 음악회 \"성소에 울리는 찬양\"" [level=3] [ref=e37]
+        - button "전교인 가을 체육대회 상세 보기" [ref=e38] [cursor=pointer]:
+          - img "전교인 가을 체육대회" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: 2026. 09. 10
+            - heading "전교인 가을 체육대회" [level=3] [ref=e44]
+        - button "여름 단기선교 파송식 상세 보기" [ref=e45] [cursor=pointer]:
+          - img "여름 단기선교 파송식" [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: 2026. 07. 15
+            - heading "여름 단기선교 파송식" [level=3] [ref=e51]
+        - button "부활절 연합 예배 성가대 상세 보기" [ref=e52] [cursor=pointer]:
+          - img "부활절 연합 예배 성가대" [ref=e55]
+          - generic [ref=e56]:
+            - generic [ref=e57]: 2026. 04. 12
+            - heading "부활절 연합 예배 성가대" [level=3] [ref=e58]
+        - button "봄맞이 이웃 초청 잔치 상세 보기" [ref=e59] [cursor=pointer]:
+          - img "봄맞이 이웃 초청 잔치" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64]: 2026. 03. 20
+            - heading "봄맞이 이웃 초청 잔치" [level=3] [ref=e65]
+  - contentinfo [ref=e66]:
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - paragraph [ref=e70]: Yedam Church
+          - paragraph [ref=e71]: 안양예담교회
+          - paragraph [ref=e72]: 경기도 안양시 동안구 관악대로 335 5층
+        - navigation "사이트 맵" [ref=e73]:
+          - heading "Site Map" [level=2] [ref=e74]
+          - list [ref=e75]:
+            - listitem [ref=e76]:
+              - link "홈" [ref=e77] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e78]:
+              - link "교회소개" [ref=e79] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e80]:
+              - link "사역소개" [ref=e81] [cursor=pointer]:
+                - /url: /ministries
+            - listitem [ref=e82]:
+              - link "교회소식" [ref=e83] [cursor=pointer]:
+                - /url: /news
+            - listitem [ref=e84]:
+              - link "갤러리" [ref=e85] [cursor=pointer]:
+                - /url: /gallery
+            - listitem [ref=e86]:
+              - link "문의하기" [ref=e87] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - heading "Contact" [level=2] [ref=e90]
+            - list [ref=e91]:
+              - listitem [ref=e92]:
+                - link "031-425-9211" [ref=e93] [cursor=pointer]:
+                  - /url: tel:0314259211
+              - listitem [ref=e94]:
+                - link "yongsuk9211@daum.net" [ref=e95] [cursor=pointer]:
+                  - /url: mailto:yongsuk9211@daum.net
+          - generic [ref=e96]:
+            - heading "Worship" [level=2] [ref=e97]
+            - list [ref=e98]:
+              - listitem [ref=e99]:
+                - generic [ref=e100]: 주일 1부 예배
+                - generic [ref=e101]: 10:30 AM
+              - listitem [ref=e102]:
+                - generic [ref=e103]: 주일 2부 예배
+                - generic [ref=e104]: 13:00 PM
+      - generic [ref=e105]:
+        - paragraph [ref=e106]: © 2026 안양예담교회. All rights reserved.
+        - paragraph [ref=e107]: In Christ, Together.

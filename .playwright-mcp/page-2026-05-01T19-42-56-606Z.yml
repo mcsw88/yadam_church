@@ -1,0 +1,113 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "안양예담교회" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - button "메뉴 열기" [ref=e5]:
+        - generic [ref=e6]: MENU
+  - generic [ref=e11]:
+    - img "예배와 공동체를 상징하는 고요한 공간" [ref=e13]
+    - generic [ref=e14]:
+      - heading "환대에서 성소로" [level=2] [ref=e16]
+      - heading "GRACE FOLLOWS FAITH" [level=1] [ref=e18]:
+        - text: GRACE
+        - text: FOLLOWS
+        - text: FAITH
+  - generic [ref=e20]:
+    - heading "About Us" [level=3] [ref=e22]
+    - heading "예배의 감격이 일상이 되고, 공동체의 따뜻함이 세상으로 흘러가는 공간을 만듭니다." [level=2] [ref=e25]:
+      - text: 예배의 감격이 일상이 되고,
+      - text: 공동체의 따뜻함이 세상으로
+      - text: 흘러가는 공간을 만듭니다.
+  - img "교회 공동체를 상징하는 따뜻한 예배의 공간" [ref=e31]
+  - generic [ref=e33]:
+    - generic [ref=e35]:
+      - paragraph [ref=e36]: Worship
+      - heading "예배 안내" [level=2] [ref=e37]
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - img "주일 1부 예배" [ref=e43]
+        - heading "주일 1부 예배" [level=3] [ref=e44]
+        - paragraph [ref=e45]: 10:30 AM
+      - generic [ref=e46]:
+        - img "주일 2부 예배" [ref=e50]
+        - heading "주일 2부 예배" [level=3] [ref=e51]
+        - paragraph [ref=e52]: 13:00 PM
+  - generic [ref=e54]:
+    - heading "✨ 마음의 성소" [level=2] [ref=e55]
+    - paragraph [ref=e56]: 현재의 고민이나 기도 제목을 나누어주세요.
+    - generic [ref=e57]:
+      - textbox "어떤 마음이든 괜찮습니다..." [ref=e58]
+      - button "마음 나누기 ✨" [ref=e59]
+  - generic [ref=e62]:
+    - generic [ref=e63]:
+      - heading "Location" [level=3] [ref=e64]
+      - heading "찾아오시는 길" [level=2] [ref=e65]
+      - generic [ref=e66]:
+        - paragraph [ref=e67]:
+          - generic [ref=e68]: Address
+          - text: 경기도 안양시 동안구 관악대로 335 5층
+        - paragraph [ref=e69]:
+          - generic [ref=e70]: Contact
+          - link "031-425-9211" [ref=e71] [cursor=pointer]:
+            - /url: tel:0314259211
+          - text: /
+          - link "yongsuk9211@daum.net" [ref=e72] [cursor=pointer]:
+            - /url: mailto:yongsuk9211@daum.net
+        - generic [ref=e73]:
+          - generic [ref=e74]: Worship
+          - list [ref=e75]:
+            - listitem [ref=e76]: 주일 1부 예배·10:30 AM
+            - listitem [ref=e77]: 주일 2부 예배·13:00 PM
+        - paragraph [ref=e78]: 관악대로 대로변에 위치하고 있으며, 관양중학교 정류장에서 도보 1분 거리입니다. 언제든 편안한 마음으로 방문해 주세요.
+    - img "안양예담교회 오시는 길 약도" [ref=e83]
+  - contentinfo [ref=e84]:
+    - generic [ref=e85]:
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - paragraph [ref=e88]: Yedam Church
+          - paragraph [ref=e89]: 안양예담교회
+          - paragraph [ref=e90]: 경기도 안양시 동안구 관악대로 335 5층
+        - navigation "사이트 맵" [ref=e91]:
+          - heading "Site Map" [level=2] [ref=e92]
+          - list [ref=e93]:
+            - listitem [ref=e94]:
+              - link "홈" [ref=e95] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e96]:
+              - link "교회소개" [ref=e97] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e98]:
+              - link "사역소개" [ref=e99] [cursor=pointer]:
+                - /url: /ministries
+            - listitem [ref=e100]:
+              - link "교회소식" [ref=e101] [cursor=pointer]:
+                - /url: /news
+            - listitem [ref=e102]:
+              - link "갤러리" [ref=e103] [cursor=pointer]:
+                - /url: /gallery
+            - listitem [ref=e104]:
+              - link "문의하기" [ref=e105] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - heading "Contact" [level=2] [ref=e108]
+            - list [ref=e109]:
+              - listitem [ref=e110]:
+                - link "031-425-9211" [ref=e111] [cursor=pointer]:
+                  - /url: tel:0314259211
+              - listitem [ref=e112]:
+                - link "yongsuk9211@daum.net" [ref=e113] [cursor=pointer]:
+                  - /url: mailto:yongsuk9211@daum.net
+          - generic [ref=e114]:
+            - heading "Worship" [level=2] [ref=e115]
+            - list [ref=e116]:
+              - listitem [ref=e117]:
+                - generic [ref=e118]: 주일 1부 예배
+                - generic [ref=e119]: 10:30 AM
+              - listitem [ref=e120]:
+                - generic [ref=e121]: 주일 2부 예배
+                - generic [ref=e122]: 13:00 PM
+      - generic [ref=e123]:
+        - paragraph [ref=e124]: © 2026 안양예담교회. All rights reserved.
+        - paragraph [ref=e125]: In Christ, Together.

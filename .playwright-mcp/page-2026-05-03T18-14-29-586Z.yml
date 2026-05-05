@@ -1,0 +1,69 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "안양예담교회" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - button "메뉴 열기" [ref=e5]:
+        - generic [ref=e6]: MENU
+  - main [ref=e11]:
+    - generic [ref=e13]:
+      - heading "갤러리" [level=1] [ref=e14]
+      - paragraph [ref=e15]: 안양예담교회가 걸어온 빛나는 흔적들
+    - generic [ref=e17]:
+      - generic [ref=e21]:
+        - button "2026" [ref=e23]
+        - button "2025" [ref=e25]
+        - generic [ref=e26]:
+          - button "2024" [ref=e27]
+          - generic [ref=e28]: — Archive
+      - generic [ref=e31]: 해당 연도의 기록이 없습니다.
+  - contentinfo [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: Yedam Church
+          - paragraph [ref=e37]: 안양예담교회
+          - paragraph [ref=e38]: 경기도 안양시 동안구 관악대로 335 5층
+        - navigation "사이트 맵" [ref=e39]:
+          - heading "Site Map" [level=2] [ref=e40]
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - link "홈" [ref=e43] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e44]:
+              - link "교회소개" [ref=e45] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e46]:
+              - link "사역소개" [ref=e47] [cursor=pointer]:
+                - /url: /ministries
+            - listitem [ref=e48]:
+              - link "교회소식" [ref=e49] [cursor=pointer]:
+                - /url: /news
+            - listitem [ref=e50]:
+              - link "갤러리" [ref=e51] [cursor=pointer]:
+                - /url: /gallery
+            - listitem [ref=e52]:
+              - link "문의하기" [ref=e53] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - heading "Contact" [level=2] [ref=e56]
+            - list [ref=e57]:
+              - listitem [ref=e58]:
+                - link "031-425-9211" [ref=e59] [cursor=pointer]:
+                  - /url: tel:0314259211
+              - listitem [ref=e60]:
+                - link "yongsuk9211@daum.net" [ref=e61] [cursor=pointer]:
+                  - /url: mailto:yongsuk9211@daum.net
+          - generic [ref=e62]:
+            - heading "Worship" [level=2] [ref=e63]
+            - list [ref=e64]:
+              - listitem [ref=e65]:
+                - generic [ref=e66]: 주일 1부 예배
+                - generic [ref=e67]: 10:30 AM
+              - listitem [ref=e68]:
+                - generic [ref=e69]: 주일 2부 예배
+                - generic [ref=e70]: 13:00 PM
+      - generic [ref=e71]:
+        - paragraph [ref=e72]: © 2026 안양예담교회. All rights reserved.
+        - paragraph [ref=e73]: In Christ, Together.
