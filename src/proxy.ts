@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -16,17 +16,17 @@ export async function proxy(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   const {
@@ -35,16 +35,16 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (pathname === '/admin/login') {
+  if (pathname === "/admin/login") {
     if (user) {
-      return NextResponse.redirect(new URL('/admin', request.url));
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
     return supabaseResponse;
   }
 
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith("/admin")) {
     if (!user) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   }
 
@@ -53,7 +53,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/admin/:path*",
+    //'/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
