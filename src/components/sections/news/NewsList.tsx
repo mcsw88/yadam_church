@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import type { Transition } from "framer-motion";
 
 import { BulletinCard } from "@/components/cards/BulletinCard";
 import { EventCard } from "@/components/cards/EventCard";
@@ -57,6 +56,7 @@ function clamp(value: number, min: number, max: number) {
 
 export function NewsList({ tab, items, onSelect }: NewsListProps) {
   const reducedMotion = useReducedMotionSafe();
+  const [canFollowText, setCanFollowText] = useState(false);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const leftTextRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,8 +68,28 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
   });
 
   useEffect(() => {
-    if (reducedMotion) {
-      rawLeftTextY.set(TOP_GUARD_PX);
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const updateCanFollowText = () => {
+      const nextCanFollow = mediaQuery.matches;
+      setCanFollowText(nextCanFollow);
+      rawLeftTextY.set(nextCanFollow ? TOP_GUARD_PX : 0);
+    };
+
+    updateCanFollowText();
+
+    mediaQuery.addEventListener("change", updateCanFollowText);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateCanFollowText);
+    };
+  }, [rawLeftTextY]);
+
+  useEffect(() => {
+    if (!canFollowText || reducedMotion) {
+      rawLeftTextY.set(0);
       return;
     }
 
@@ -131,7 +151,7 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
       window.removeEventListener("scroll", requestUpdateScrollPosition);
       window.removeEventListener("resize", updateTravel);
     };
-  }, [items.length, rawLeftTextY, reducedMotion, tab]);
+  }, [canFollowText, items.length, rawLeftTextY, reducedMotion, tab]);
 
   if (items.length === 0) {
     return (
@@ -143,15 +163,6 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
   }
 
   const meta = NEWS_PANEL_META[tab];
-
-  const layoutTransition: Transition = reducedMotion
-    ? { duration: 0 }
-    : {
-        type: "spring" as const,
-        stiffness: 85,
-        damping: 24,
-        mass: 0.9,
-      };
 
   const renderCards = () => {
     if (tab === "events") {
@@ -213,7 +224,11 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
         <aside className="relative lg:block lg:min-h-[520px]">
           <motion.div
             ref={leftTextRef}
-            style={reducedMotion ? undefined : { y: smoothLeftTextY }}
+            style={
+              !reducedMotion && canFollowText
+                ? { y: smoothLeftTextY }
+                : undefined
+            }
             className="space-y-6 lg:absolute lg:left-0 lg:top-0"
           >
             <h2 className="font-serif text-4xl italic leading-tight text-[var(--color-dado-dark)] md:text-8xl lg:text-8xl">
