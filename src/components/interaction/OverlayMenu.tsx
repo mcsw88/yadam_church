@@ -332,7 +332,7 @@ export function OverlayMenu({
             >
               {/* Mobile: root list or sub panel (drill-down) */}
               <div
-                className="flex min-h-0 flex-1 flex-col overflow-hidden md:hidden"
+                className="relative flex min-h-0 flex-1 flex-col overflow-hidden md:hidden"
                 role="region"
                 aria-live="polite"
                 aria-atomic="true"
@@ -346,7 +346,7 @@ export function OverlayMenu({
                       animate="visible"
                       exit="exit"
                       transition={mobileStepTransition}
-                      className="flex min-h-0 flex-1 flex-col overflow-hidden"
+                      className="absolute inset-0 flex min-h-0 w-full flex-col items-start justify-start overflow-hidden"
                     >
                       <ul className="space-y-3 pb-2">
                         {OVERLAY_MENU_ITEMS.map((item: MenuItem) => {
@@ -390,7 +390,7 @@ export function OverlayMenu({
                       animate="visible"
                       exit="exit"
                       transition={mobileStepTransition}
-                      className="flex min-h-0 flex-1 flex-col overflow-hidden"
+                      className="absolute inset-0 flex min-h-0 w-full flex-col items-start justify-start overflow-hidden"
                     >
                       <button
                         type="button"
@@ -407,7 +407,7 @@ export function OverlayMenu({
                       <h3 className="shrink-0 font-serif text-2xl leading-snug text-dado-light">
                         {mobileSubItem.labelKo}
                       </h3>
-                      <div className="mt-3 min-h-0 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      <div className="mt-3 min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         <SubLinkList
                           menuId={mobileSubItem.id}
                           subs={mobileSubItem.sub}
