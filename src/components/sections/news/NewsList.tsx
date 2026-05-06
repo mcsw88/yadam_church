@@ -209,11 +209,7 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
         </p>
       </div>
 
-      <motion.div
-        layout
-        transition={layoutTransition}
-        className="grid gap-10 lg:grid-cols-[28%_68%] lg:gap-x-[4%] lg:gap-y-0"
-      >
+      <div className="grid gap-10 lg:grid-cols-[28%_68%] lg:gap-x-[4%] lg:gap-y-0">
         <aside className="relative lg:block lg:min-h-[520px]">
           <motion.div
             ref={leftTextRef}
@@ -230,10 +226,8 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
           </motion.div>
         </aside>
 
-        <motion.div layout transition={layoutTransition}>
-          {renderCards()}
-        </motion.div>
-      </motion.div>
+        <div>{renderCards()}</div>
+      </div>
     </div>
   );
 }
