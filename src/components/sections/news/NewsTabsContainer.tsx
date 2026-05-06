@@ -9,7 +9,6 @@ import {
   useState,
 } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 import { BulletinBody } from "@/components/cards/slide-over-bodies/BulletinBody";
@@ -43,24 +42,28 @@ function formatNewsDate(input: string): string {
   return `${parsed.year}. ${mm}. ${dd}`;
 }
 
-export function NewsTabsContainer({ initialTab, newsData }: NewsTabsContainerProps) {
-  const formattedNewsData: NewsDataMap = useMemo(() => ({
-    notices: newsData.notices.map((item) => ({
-      ...item,
-      date: formatNewsDate(item.date),
-    })),
-    events: newsData.events.map((item) => ({
-      ...item,
-      date: formatNewsDate(item.date),
-    })),
-    bulletins: newsData.bulletins.map((item) => ({
-      ...item,
-      date: formatNewsDate(item.date),
-    })),
-  }), [newsData]);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export function NewsTabsContainer({
+  initialTab,
+  newsData,
+}: NewsTabsContainerProps) {
+  const formattedNewsData: NewsDataMap = useMemo(
+    () => ({
+      notices: newsData.notices.map((item) => ({
+        ...item,
+        date: formatNewsDate(item.date),
+      })),
+      events: newsData.events.map((item) => ({
+        ...item,
+        date: formatNewsDate(item.date),
+      })),
+      bulletins: newsData.bulletins.map((item) => ({
+        ...item,
+        date: formatNewsDate(item.date),
+      })),
+    }),
+    [newsData],
+  );
+
   const reducedMotion = useReducedMotionSafe();
   const listId = useId();
   const arrowNavRef = useRef(false);
@@ -68,10 +71,7 @@ export function NewsTabsContainer({ initialTab, newsData }: NewsTabsContainerPro
   const [selectedItem, setSelectedItem] = useState<NewsItem | null>(null);
   const [visibleCounts, setVisibleCounts] = useState(INITIAL_VISIBLE_COUNT);
 
-  const activeTab = useMemo<NewsTabId>(() => {
-    const rawTab = searchParams.get("tab");
-    return rawTab && isNewsTabId(rawTab) ? rawTab : initialTab;
-  }, [initialTab, searchParams]);
+  const [activeTab, setActiveTab] = useState<NewsTabId>(initialTab);
 
   const tabButtonId = useCallback(
     (tabId: string) => `${listId}-news-tab-${tabId}`,
@@ -80,10 +80,17 @@ export function NewsTabsContainer({ initialTab, newsData }: NewsTabsContainerPro
 
   const handleTabChange = (nextTabId: string) => {
     if (!isNewsTabId(nextTabId)) return;
+
     setSelectedItem(null);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", nextTabId);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    setActiveTab(nextTabId);
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      params.set("tab", nextTabId);
+
+      const nextUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState(null, "", nextUrl);
+    }
   };
 
   useEffect(() => {
@@ -235,7 +242,6 @@ export function NewsTabsContainer({ initialTab, newsData }: NewsTabsContainerPro
       <section className="px-6 md:px-24">
         <div className="mx-auto max-w-screen-2xl">
           <NewsList
-            key={activeTab}
             tab={activeTab}
             items={visibleItems}
             onSelect={setSelectedItem}
