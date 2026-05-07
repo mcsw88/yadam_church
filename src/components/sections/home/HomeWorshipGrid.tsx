@@ -1,12 +1,12 @@
-import { CHURCH_INFO } from '@/data/church-info';
-import { ParallaxImage } from '@/components/motion/ParallaxImage';
-import { FadeIn } from '@/components/motion/FadeIn';
-import { PageContainer } from '@/components/ui/PageContainer';
-import { SectionHeading } from '@/components/ui/SectionHeading';
+import { CHURCH_INFO } from "@/data/church-info";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
+import { FadeIn } from "@/components/motion/FadeIn";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 const WORSHIP_CARD_IMAGES = [
-  'https://images.unsplash.com/photo-1511649475669-e288648b2339?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-  'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+  "/images/main/jesus_is_king.png",
+  "/images/main/the_cross.webp",
 ] as const;
 
 export default function HomeWorshipGrid() {
@@ -27,12 +27,13 @@ export default function HomeWorshipGrid() {
         </FadeIn>
         <div className="grid grid-cols-1 gap-24 md:grid-cols-2">
           {worship.map((item, index) => {
-            const imageSrc = WORSHIP_CARD_IMAGES[index % WORSHIP_CARD_IMAGES.length];
+            const imageSrc =
+              WORSHIP_CARD_IMAGES[index % WORSHIP_CARD_IMAGES.length];
             return (
               <FadeIn
                 key={`${item.name}-${item.time}`}
                 delay={index * 0.2}
-                className={index % 2 === 1 ? 'md:mt-32' : undefined}
+                className={index % 2 === 1 ? "md:mt-32" : undefined}
               >
                 <div className="relative mb-6 h-[70vh] w-full overflow-hidden">
                   <ParallaxImage

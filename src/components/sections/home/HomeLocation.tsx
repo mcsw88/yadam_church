@@ -1,13 +1,12 @@
-import { CHURCH_INFO } from '@/data/church-info';
-import { ParallaxImage } from '@/components/motion/ParallaxImage';
-import { FadeIn } from '@/components/motion/FadeIn';
-import { PageContainer } from '@/components/ui/PageContainer';
+import { CHURCH_INFO } from "@/data/church-info";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
+import { FadeIn } from "@/components/motion/FadeIn";
+import { PageContainer } from "@/components/ui/PageContainer";
 
-const LOCATION_IMAGE =
-  'https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+const LOCATION_IMAGE = "/images/main/map.png";
 
 function digitsOnly(value: string): string {
-  return value.replace(/\D/g, '');
+  return value.replace(/\D/g, "");
 }
 
 export default function HomeLocation() {
@@ -36,13 +35,16 @@ export default function HomeLocation() {
                 <span className="mb-1 block text-xs uppercase tracking-widest text-dado-accent">
                   Contact
                 </span>
-                <a className="underline decoration-dado-light underline-offset-4 hover:text-dado-dark" href={telHref}>
+                <a
+                  className="underline decoration-dado-light underline-offset-4 hover:text-dado-dark"
+                  href={telHref}
+                >
                   {phone}
                 </a>
                 {email ? (
                   <>
-                    {' '}
-                    /{' '}
+                    {" "}
+                    /{" "}
                     <a
                       className="underline decoration-dado-light underline-offset-4 hover:text-dado-dark"
                       href={`mailto:${email}`}
@@ -60,7 +62,9 @@ export default function HomeLocation() {
                   <ul className="space-y-2 text-base text-gray-600">
                     {worship.map((w) => (
                       <li key={`${w.name}-${w.time}`}>
-                        <span className="font-medium text-dado-dark">{w.name}</span>
+                        <span className="font-medium text-dado-dark">
+                          {w.name}
+                        </span>
                         <span className="mx-2 text-gray-400">·</span>
                         <span>{w.time}</span>
                       </li>
@@ -69,8 +73,8 @@ export default function HomeLocation() {
                 </div>
               ) : null}
               <p className="pt-6 text-sm text-gray-400">
-                관악대로 대로변에 위치하고 있으며, 관양중학교 정류장에서 도보 1분 거리입니다.
-                언제든 편안한 마음으로 방문해 주세요.
+                관악대로 대로변에 위치하고 있으며, 관양중학교 정류장에서 도보
+                1분 거리입니다. 언제든 편안한 마음으로 방문해 주세요.
               </p>
             </div>
           </FadeIn>
