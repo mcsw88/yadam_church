@@ -136,6 +136,13 @@ export function NavigationTransitionProvider({
         return;
       }
 
+      // 950ms 오버레이 지연 동안 RSC payload를 미리 준비 (push 전 반드시 실행)
+      try {
+        router.prefetch(href);
+      } catch {
+        // prefetch 실패는 이동 자체에 영향 없음
+      }
+
       busyRef.current = true;
       targetRef.current = parseDestination(href);
 

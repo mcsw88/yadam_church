@@ -62,8 +62,8 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
 
   const rawLeftTextY = useMotionValue(TOP_GUARD_PX);
   const smoothLeftTextY = useSpring(rawLeftTextY, {
-    stiffness: 200,
-    damping: 28,
+    stiffness: 160,
+    damping: 30,
     mass: 1,
   });
 
