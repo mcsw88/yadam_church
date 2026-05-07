@@ -67,20 +67,33 @@ function MenuNavAnchor({
       </Link>
     );
   }
+
   return (
-    <a
+    <Link
       href={href}
+      prefetch
       className={className}
       onMouseEnter={onMouseEnter}
       onFocus={onFocus}
       aria-haspopup={ariaHasPopup}
-      onClick={(e) => {
-        e.preventDefault();
+      onClick={(event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.shiftKey
+        ) {
+          return;
+        }
+
+        event.preventDefault();
         onInternalNavigate(href);
       }}
     >
       {children}
-    </a>
+    </Link>
   );
 }
 
@@ -270,7 +283,7 @@ export function OverlayMenu({
     : SUB_PANEL_VARIANTS_DESKTOP;
   const subPanelTransition = reducedMotion
     ? { ...TWEEN_FADE, duration: DURATION_MS.transition / 10000 }
-    : { TWEEN_FADE, duration: 0.8 };
+    : { ...TWEEN_FADE, duration: 0.8 };
 
   const mobileStepVariants = reducedMotion
     ? REDUCED_MOTION_VARIANTS
