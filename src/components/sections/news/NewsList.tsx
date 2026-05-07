@@ -62,9 +62,9 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
 
   const rawLeftTextY = useMotionValue(TOP_GUARD_PX);
   const smoothLeftTextY = useSpring(rawLeftTextY, {
-    stiffness: 45,
-    damping: 24,
-    mass: 1.1,
+    stiffness: 200,
+    damping: 28,
+    mass: 1,
   });
 
   useEffect(() => {
@@ -92,6 +92,8 @@ export function NewsList({ tab, items, onSelect }: NewsListProps) {
       rawLeftTextY.set(0);
       return;
     }
+
+    rawLeftTextY.set(TOP_GUARD_PX);
 
     const section = sectionRef.current;
     const leftText = leftTextRef.current;
